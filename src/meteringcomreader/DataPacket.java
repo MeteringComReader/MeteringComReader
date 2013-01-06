@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package meteringcomreader;
 
 import java.sql.Date;
@@ -9,8 +6,8 @@ import java.sql.Timestamp;
 import meteringdatareader.Frame;
 
 /**
- *
- * @author Juliusz
+ * 
+ * @author Juliusz Jezierski
  */
 public class DataPacket {
     static int LEN=29;

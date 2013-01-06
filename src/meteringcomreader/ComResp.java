@@ -1,37 +1,60 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package meteringcomreader;
 import java.util.HashMap;
 
 /**
  *
- * @author Juliusz
+ * @author Juliusz Jezierski
  */
 
 
 
 public class ComResp {
     
+    /**
+     * Opisuje obiekt odpowiedź z koncentratora za pomocą pól resp i data, zawiera
+     * również rozmiar parametrów odpowiedzi w resSizes.
+     */
     static  protected HashMap 
         <Integer, Integer> resSizes = new HashMap<Integer, Integer>(50);
 
 
-
+    /**
+     * Ustawia rozmiar parametrów odpowiedzi.
+     * @param res kod odpowiedzi
+     * @param packetSize rozmiar parametrów odpowiedzi
+     */
     static void setResSize(int res, int packetSize) {
         resSizes.remove(res);
         resSizes.put(res, packetSize)  ;      
     }
         
+    /**
+     * Kod odpowiedzi.
+     */
     protected int resp;
+    
+    /**
+     * Parametry odpowiedzi.
+     */
     protected  byte[]data;
+        
+    /**
+     * Konstruuje obiekt odpowiedzi.
+     * @param resp kod odpowiedzi
+     * @param data parametry odpowiedzi
+     */
     public ComResp(int resp, byte[]data){
        this.resp=resp;
        this.data=data;
     }
    
+    /**
+     * Zwraca rozmiar parametrów odpowiedzi dla danego kodu odpowiedzi.
+     * @param res kod odpowiedzi
+     * @return rozmiar parametrów odpowiedzi
+     * @throws MeteringSessionException zgłaszany w przypadku nie znalezienia kodu odpowiedzi
+     */
     static int getResDataSize(int res) throws MeteringSessionException{        
         Integer sizeInt=resSizes.get(res&0x0FFF);  //ignore error code
         if (sizeInt==null){
@@ -88,6 +111,12 @@ static{
     resSizes.put(Utils.getNextLoggerFlashSessionRes, 0); //set by LoggerFlasSession class
 }
 
+    /**
+     * Testuje poprawność obiektu odpowiedzi ze spodziewanym kodem odpowiedzi.
+     * @param ack spodziewany kod odpowiedzi
+     * @throws MeteringSessionException w przypadku niezgodności obiektu odpowiedzi
+     * ze spodziewanym kodem odpowiedzi lub w przypadku ustawienia bitów błędu w odpowiedzi
+     */
     void receiveAck(int ack) throws MeteringSessionException {
         if((0x00FF & resp)!= (0x00FF & ack)) //młodszy
             throw new MeteringSessionException("Expected command ack:"+(0x00FF & ack)+" found:"+(0x00FF & resp));
@@ -98,11 +127,21 @@ static{
 
     }
 
+    /**
+     * Zwraca parametry obiektu odpowiedzi.
+     * @return parametry obiektu odpowiedzi
+     */
     byte[] receiveData() {
         return this.data;
     }
             
-
+    /**
+     * Zwraca ustawione bity błędu odpowiedzi w stosunku do spodziewanego kodu odpowiedzi.
+     * @param ack spodziewany kod odpowiedzi
+     * @return ustawione bity błędu
+     * @throws MeteringSessionException w przypadku niezgodności obiektu odpowiedzi
+     * ze spodziewanym kodem odpowiedzi
+     */
     int receiveAckWithErrCode(int ack) throws MeteringSessionException {
         if((0x00FF & resp)!= (0x00FF & ack)) //młodszy
             throw new MeteringSessionException("Expected command ack:"+(0x00FF & ack)+" found:"+(0x00FF & resp));

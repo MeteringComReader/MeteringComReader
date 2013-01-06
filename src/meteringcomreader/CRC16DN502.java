@@ -1,36 +1,55 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 /**
- *
- * @author Juliusz
+ * Służy do wyliczenia sumy kontrolnej CRC16 według algorytmu opisanego 
+ * w notce Texas Instruments <a href="http://www.ti.com/lit/an/swra111d/swra111d.pdf">DN502</a>
+ * @author Juliusz Jezierski
  */
 public class CRC16DN502 {
 
+    /**
+     * Przechowuje aktualną sumę kontrolną CRC16.
+     */
     protected int crcReg = 0xFFFF;
     protected static int CRC16_POLY = 0x8005;
 
+    /**
+     * Tworzy zainicjowany obiekt przechowujący sumę kontrolną CRC16.
+     */
     public CRC16DN502() {
         super();
     }
     
+    /**
+     * Inicjuje obiekt przechowujący sumę kontrolną CRC16.
+     */
     public void init(){
         crcReg= 0xFFFF;
     }
     
+    /**
+     * Zwraca wyliczoną sumę kontrolną CRC16.
+     * 
+     * @return wyliczona suma kontrolna CRC16
+     */
     public int getChecksum(){
         return crcReg;
     }
     
+    /**
+     * Uaktualnia sumę kontrolną CRC16
+     * @param aBytes bajt uaktualniający sumę kontrolną CRC16 
+     */
     public void update(byte[] aBytes){
         for (int i=0; i< aBytes.length; i++){
             update(aBytes[i]);            
         }
     }
 
+    /**
+     * 
+     * @param aByte tablica bajtów uaktualniających sumę kontrolną CRC16
+     */
     public void update(byte aByte) {
         int crcData=((int)aByte)&0xFF;
         int i;
@@ -57,6 +76,7 @@ public class CRC16DN502 {
         CRC16DN502 checksum = new CRC16DN502();
         for (int i=0; i< txBuffer.length; i++){
             checksum.update(txBuffer[i]);            
+            
         }
             System.out.println(( Integer.toHexString(checksum.getChecksum())));
          byte[] rCRC={0x56,0x7E};

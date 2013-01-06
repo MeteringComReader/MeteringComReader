@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 import java.sql.Connection;
@@ -9,15 +5,34 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- *
- * @author Juliusz
+ * Zawiera pomocnicze funkcje statyczne operujące na bazie danych
+ * @author Juliusz Jezierski
  */
 public class DBUtils {
+    /**
+     * Tekst polecenia ustawiającego strefę czasową polecenia na UTC.
+     */
     protected static String setTimezoneToUTC="alter session set time_zone='00:00'";
+    /**
+     * Opis połączenia do bazy danych.
+     */
     protected static String connDesc = "jdbc:oracle:thin:@//localhost:1521/XE";
+    /**
+     * Nazwa użytkownika bazy danych.
+     */
     protected static String user = "meter";
+    /**
+     * Hasło użytkownika bazy danych.
+     */
     protected static String pass = "m3t3ring";
 
+    /**
+     * Tworzy połączenie do bazy danych i ustawia strefę czasową na 
+     * UTC.
+     * @return zwraca utworzone połączenie do bazy danych
+     * @throws MeteringSessionException w przypadku nieznalezienia klasy drivera JDBC
+     * lub zgłoszenia SQLException
+     */
     static Connection createDBConnection() throws MeteringSessionException{
         Connection conn=null;
         try {

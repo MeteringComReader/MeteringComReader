@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 import gnu.io.CommPortIdentifier;
@@ -13,8 +9,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- *
- * @author Juliusz
+ * Zawiera pomocnicze stałe i funkcje
+ * 
+ * @author Juliusz Jezierski
  */
 public class Utils {
     
@@ -72,8 +69,17 @@ public class Utils {
     static final int intervalHubFlashMemMode=1;
     static final int overwriteHubFlashMemMode=2;
             
+    /**
+     * String reprezentujący Czas Startowy
+     */
     public static  String timeStartPointStr = "1970-01-01 00:00:00";
+    /**
+     * Liczba sekund do Czasu Startowego
+     */
     public static long timeStartPoint = Timestamp.valueOf(Utils.timeStartPointStr).getTime()/1000; //in seconds
+    /**
+     * Kalendarz dla czasu UTC
+     */
     public static Calendar UTCcalendar=Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00")) ;
     
     final static int startLoggerFlashRes=0x0102;
@@ -103,6 +109,14 @@ public class Utils {
     static final int getNextLoggerFlashSessionReq=0x010A;
     static final int getNextLoggerFlashSessionRes=0x010A;
     
+/**
+ * Zamienia long na tablicę bajtów według Little Endian.
+ * 
+ * @param data zamieniany long
+ * @param i liczba bajtów z longa, który jest zamieniany
+ * @return zwracany tablicę bajtów
+ */
+    
     static byte[] long2bytes(long data, int i) {
         byte[] ret= new byte[i];
         for(byte u=0; u<i; u++)
@@ -110,24 +124,53 @@ public class Utils {
         return ret;
     }
     
+    /**
+     * Wstawia long do tablicy bajtów według Little Endian.
+     * 
+     * @param output tablica bajtów, do której jest wstawiany long
+     * @param start pozycja w tablicy, od której jest wstawiany long
+     * @param input wstawiany long
+     * @param size liczba najmłodszych bajtów longa wstawianych do tablicy
+     */
     static void long2bytes(byte[] output, int start, long input, int size){
         for (int i=start; i<start+size; i++){
             output[i]=(byte)((input>>>(8*i))&0xFF);
         }        
     }
     
+    /**
+     * Zamienia fragment tablicy bajtów na longa według Little Endian.
+     * 
+     * @param data zamieniana tablica bajtów
+     * @param start indeks najmłodzego bajtu fragmetu zamienianego na long
+     * @param size liczba bajtów tablicy zamienianych na long
+     * @return zamieniony long
+     */
     static long bytes2long(byte[] data, int start, int size){
         long ret=0;
         for(int u=(size-1)+start; u>=start; u--)
             ret=(ret<<8)| (((long)data[u])&0xFFL);
         return ret;
     }
+    
+    /**
+     * Zamienia fragment tablicy bajtów na longa według Little Endian.
+     * 
+     * @param data zamieniana tablica bajtów
+     * @param size liczba bajtów tablicy zamienianych na long
+     * @return zamieniony long
+     */
     static long bytes2long(byte[] data, int size){
         return bytes2long(data, 0, size);
     }
     
-        static String getPortTypeName ( int portType )
-    {
+    /**
+     * Zamienia liczbowy typ portu urządzenia na nazwę typu portu.
+     * 
+     * @param portType liczbowy typ portu
+     * @return nazwa typu portu
+     */
+    static String getPortTypeName ( int portType ){
         switch ( portType )
         {
             case CommPortIdentifier.PORT_I2C:
@@ -144,24 +187,53 @@ public class Utils {
                 return "unknown type";
         }
     }
+    
+    /**
+     * Zamienia t na liczbę sekund od Czasu Startowego
+     * @param t zamieniany Timestamp 
+     * @return liczba sekund od Czasu Startowego
+     */
     static long timestamp2int(Timestamp t){
         return t.getTime()/1000 - timeStartPoint;
     }
     
+    /**
+     * Ustawia t na liczbę sekund od Czasu Startowego 
+     * @param t ustawiany Timestamp
+     * @param secondsTime liczba sekund od Czasu Startowego
+     */
     static void setTimestamp(Timestamp t, long secondsTime){
         t.setTime((timeStartPoint+secondsTime)*1000);
     }
     
+    /**
+     * Zamienia liczbę sekund od Czasu Startowego na Timestamp
+     * @param secondsTime liczba sekund od Czasu Startowego
+     * @return zwracany Timestamp
+     */
     static Timestamp time2Timestamp(long secondsTime){
         Timestamp t = new Timestamp(0);
         setTimestamp(t, secondsTime);
         return t;
     }
 
+    /**
+     * Wysyła polecenie do strumienia reprezentującego połączenie do koncentratora
+     * @param outputStream strumień wyjściowy reprezentujący połączenie do koncentratora
+     * @param command wysyłane polecenie w postaci dwóch najmłodszych bajtów
+     * @throws MeteringSessionException 
+     */
     static void sendCommand(OutputStream outputStream, int command) throws MeteringSessionException {
         Utils.sendCommand(outputStream, command, null);
     }
 
+    /**
+     * Wysyła polecenie wraz z parametrami do strumienia reprezentującego połączenie do koncentratora
+     * @param outputStream strumień wyjściowy reprezentujący połączenie do koncentratora
+     * @param command wysyłane polecenie w postaci dwóch najmłodszych bajtów
+     * @param data parametry polecenia
+     * @throws MeteringSessionException w przypadku wystąpienia wyjątku  we-wy przy operacji na strumieniu 
+     */
     static void sendCommand(OutputStream outputStream, int command, byte[] data) throws MeteringSessionException {
         byte buf[]=Utils.long2bytes(command, (byte)0x02);
         
@@ -175,6 +247,11 @@ public class Utils {
         }    
     }
 
+    /**
+     * Czyści strumień wejściowy reprezentujący połączenie z koncentratora
+     * @param inputStream strumień wejściowy reprezentujący połączenie z koncentratora
+     * @throws MeteringSessionSPException w przypadku wystąpienia wyjątku  we-wy przy operacji na strumieniu
+     */
     static void cleanInputStream(InputStream inputStream) throws MeteringSessionSPException {
         try {
             while (inputStream.read() > 0);
@@ -183,6 +260,15 @@ public class Utils {
         }
     }
 
+    /**
+     * Odczytuje dane ze strumienia wejściowego reprezentującego połączenie z koncentratora
+     * @param inputStream strumień wejściowy reprezentujący połączenie z koncentratora
+     * @param buf tablica wypełniana odczytanymi bajtami
+     * @param size liczba bajtów do odczytania
+     * @return liczba odczytanych bajtów
+     * @throws MeteringSessionTimeoutException w przypadku wystąpienia odczytu danych ze strumienia
+     * @throws MeteringSessionException w przypadku wystąpienia wyjątku  we-wy przy operacji na strumieniu
+     */
     static int readBytes(InputStream inputStream, byte[] buf, int size) throws MeteringSessionException {
         byte ret[] = new byte[1];
         int len;
@@ -205,6 +291,12 @@ public class Utils {
         return size;    
     }
 
+    /**
+     * Zamienia heksadecymalny identyfikator urządzenia z pominięciem prefiksu obszaru aplikacji
+     * na longa
+     * @param measurerNo heksadecymalny identyfikator urządzenia z prefiksem obszaru aplikacji
+     * @return zamieniony long
+     */
     public static long hexId2long(String measurerNo) {
         String idWithoutPrefix=measurerNo.substring(4, measurerNo.length());
         long id = Long.parseLong(idWithoutPrefix, 16);

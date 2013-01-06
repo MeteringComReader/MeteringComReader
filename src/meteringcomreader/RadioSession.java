@@ -1,15 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Juliusz
+ * 
+ * @author Juliusz Jezierski
  */
 public class RadioSession extends MeteringSession implements Runnable{
     
