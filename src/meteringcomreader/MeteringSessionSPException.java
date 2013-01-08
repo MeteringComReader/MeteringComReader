@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
-import java.io.IOException;
-
 /**
- *
- * @author Juliusz
+ * Wyjątek zgłaszany w przypadku niepowodzenia wykonania operacji
+ * wejścia-wyjścia na strumieniu  służącemu do odbierania danych 
+ * z połączenia z koncentratorem (SP - serial port).
+ * @author Juliusz Jezierski
  */
 class MeteringSessionSPException extends MeteringSessionException{
 

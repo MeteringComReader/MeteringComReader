@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 /**
- *
- * @author Juliusz
+ * Wyjątek zgłaszany w przypadku niepowodzenia wykonania operacji
+ * na koncentratorze.
+ * @author Juliusz Jezierski
  */
 public class MeteringSessionException extends Exception {
     

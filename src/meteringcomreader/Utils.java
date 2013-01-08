@@ -64,19 +64,27 @@ public class Utils {
     final static int closeRadioSessionRes=0x0802;
     
 //    static final int TIMEOUT=1000000;
-    static final int TIMEOUT=100;
+   
+     /**
+     * Maksymalny czas oczekiwania na zakończenie operacji odczytu
+     * ze strumienia danych równy wyrażony w milisekundach.
+     */
+    public static final int TIMEOUT=100;
+
 
     static final int intervalHubFlashMemMode=1;
     static final int overwriteHubFlashMemMode=2;
             
     /**
-     * String reprezentujący Czas Startowy
+     * String reprezentujący Czas Startowy A4P.
      */
-    public static  String timeStartPointStr = "1970-01-01 00:00:00";
+    public static  final String timeStartPointStr = "1970-01-01 00:00:00";
+    
     /**
-     * Liczba sekund do Czasu Startowego
+     * Liczba sekund od początku January 1, 1970, 00:00:00 UTC do Czasu Startowego A4P.
      */
-    public static long timeStartPoint = Timestamp.valueOf(Utils.timeStartPointStr).getTime()/1000; //in seconds
+    public static final long timeStartPoint = Timestamp.valueOf(Utils.timeStartPointStr).getTime()/1000; //in seconds
+    
     /**
      * Kalendarz dla czasu UTC
      */
@@ -266,7 +274,8 @@ public class Utils {
      * @param buf tablica wypełniana odczytanymi bajtami
      * @param size liczba bajtów do odczytania
      * @return liczba odczytanych bajtów
-     * @throws MeteringSessionTimeoutException w przypadku wystąpienia odczytu danych ze strumienia
+     * @throws MeteringSessionTimeoutException w przypadku przekroczenia czasu 
+     * oczekiwania {@link #TIMEOUT} na odczytu danych ze strumienia
      * @throws MeteringSessionException w przypadku wystąpienia wyjątku  we-wy przy operacji na strumieniu
      */
     static int readBytes(InputStream inputStream, byte[] buf, int size) throws MeteringSessionException {

@@ -5,8 +5,10 @@
 package meteringcomreader;
 
 /**
- *
- * @author Juliusz
+ * Wyjątek zgłaszany w przypadku przekroczenia czasu oczekiwania 
+ * {@link Utils#TIMEOUT} na odczyt ze strumienia, służącego do odbierania danych 
+ * z połączenia z koncentratorem.
+ * @author Juliusz Jezierski
  */
 public class MeteringSessionTimeoutException extends MeteringSessionException{
     public MeteringSessionTimeoutException(String msg){

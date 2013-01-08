@@ -15,25 +15,62 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Juliusz
+ * Reprezentuje ekspedytor informacji odbieranych z połączenia do koncentratora.
+ * Pakiety danych odbierane ze sesji radiowej umieszczane są przez metodę serialEvent
+ * w kolejce rsData,
+ * natomiast inne odpowiedzi z koncentratora umieszczane są przez metodę serialEvent
+ * w kolejce resp.
+ * @author Juliusz Jezierski
  */
 public class ComReadDispatch implements SerialPortEventListener{
     
+    /**
+     * Reprezentuje strumień, służący do odbierania danych z połączenia 
+     * z koncentratorem.
+     */
     protected InputStream inputStream;
+    
+    /**
+     * Reprezentuje kolejkę, w której metoda serialEvent umieszcza odebrane 
+     * z koncentratora pakiety danych odebrane w sesji radiowej.
+     */
     protected BlockingQueue<DataPacket> rsData=new LinkedBlockingQueue<DataPacket>();
+    
+    /**
+     * Reprezentuje kolejkę, w której metoda serialEvent umieszcza odpowiedzi odebrane 
+     * z koncentratora z wyjątkiem danych z sesji radiowej.
+     */
     protected BlockingQueue<ComResp> resp=new LinkedBlockingQueue<ComResp>();
     
+    /**
+     * Służy do przekazania wyjątku zgłaszanego w metodzie serialEvent
+     * przy odbieraniu danych z sesji radiowej.
+     */
     protected MeteringSessionException rsException=null;
+    
+    /**
+     * Służy do przekazania wyjątku zgłaszanego w metodzie serialEvent
+     * przy odbieraniu odpowiedzi (z wyjątkiem danych odbieranych w sesji radiowej).
+     */
     protected MeteringSessionException resException=null;
     
     
+    /**
+     * Konstruuje obiekt ekspedytora inicjując pole {@link #inputStream}.
+     * @param in parametr inicjujący pole {@link #inputStream}
+     */
     public ComReadDispatch(InputStream in){
         this.inputStream=in;
     }
     
     
 
+    /**
+     * Implementacja metody uruchamianej w przypadku wykrycia zdarzenia na strumieniu
+     * {@link #inputStream}, obsługiwane jest tylko zdarzenie DATA_AVAILABLE,
+     * zgłaszane w momencie pojawienia się nowych danych w strumieniu.
+     * @param spe obiekt opisujący zdarzenie uaktywniające tę metodę
+     */
     @Override
     public void serialEvent(SerialPortEvent spe) {
 System.out.println("Time:"+System.nanoTime()+", serialEvent: "+ spe.toString()+","+spe.getEventType()+", thread: "+Thread.currentThread().getName());           
@@ -98,7 +135,13 @@ System.out.println("Time:"+System.nanoTime()+","+" exeption dedected in serialEv
         }
     }
     
-   public DataPacket getNextRSPacket() throws MeteringSessionException{
+    /**
+     * Pobiera kolejny pakiet danych przesłanych w sesji radiowej z kolejki {@link #rsData}.
+     * @return pakiet danych przesłany asynchronicznie w sesji radiowej
+     * @throws MeteringSessionException w przypadku wykrycia wyjątku zarejestrowanego
+     * w polu {@link #rsException}
+     */
+    public DataPacket getNextRSPacket() throws MeteringSessionException{
        MeteringSessionException e= getRSException();
        if (e!=null){
 System.out.println("Time:"+System.nanoTime()+","+"getNextRSPacket exeption dedected in getNextRSPacket "+e);           
@@ -113,7 +156,15 @@ System.out.println("Time:"+System.nanoTime()+","+"getNextRSPacket exeption dedec
        return dp;
    }
    
-   public ComResp getNextResp() throws MeteringSessionException{
+    /**
+     * Pobiera kolejną odpowiedź z kolejki {@link #resp}.
+     * @return odpowiedź koncentratora na wysłane do niego wcześniej polecenie
+     * @throws MeteringSessionTimeoutException w przypadku przekroczenia czasu
+     * oczekiwania na odpowiedź z kolejki.
+     * @throws MeteringSessionException w przypadku wykrycia wyjątku zarejestrowanego
+     * w polu {@link #resException}
+     */
+    public ComResp getNextResp() throws MeteringSessionException{
        MeteringSessionException e= getResException();
        if (e!=null){
 System.out.println("Time:"+System.nanoTime()+","+"exeption dedected in getNextResp "+e);           
@@ -132,7 +183,18 @@ System.out.println("Time:"+System.nanoTime()+","+Thread.currentThread().getName(
        return ret;
    }
     
-   protected int _readBytes(byte[]buf, int size) throws MeteringSessionException{
+    /**
+     * Odczytuje ze strumienia {@link #inputStream} <CODE>size</CODE> bajtów 
+     * i umieszcza je w tablicy bajtów <CODE>buf</CODE>.
+     * @param buf tablica, w której metoda umieszcza odczytane dane
+     * @param size liczba bajtów do odczytu ze strumienia {@link #inputStream}
+     * @return liczba odczytanych bajtów
+     * @throws MeteringSessionTimeoutException w przypadku przekroczenia czasu
+     * oczekiwania {@link Utils#TIMEOUT}.
+     * @throws MeteringSessionException w przypadku wystąpienia błędów
+     * we-wy na strumieniu {@link #inputStream}
+     */
+    protected int _readBytes(byte[]buf, int size) throws MeteringSessionException{
         byte ret[] = new byte[1];
         int len;
         
@@ -160,34 +222,64 @@ System.out.println("Time:"+System.nanoTime()+","+" _readBytes size:"+size);
         return size;
     }
    
+   /**
+    * Setter dla pola {@link #rsException}.
+    * @param e ustawiany wyjątek
+    */
    synchronized protected void setRSException(MeteringSessionException e){
        this.rsException=e;
    }
    
+   /**
+    * Getter dla dla pola {@link #rsException}.
+    * @return wyjątek
+    */
    synchronized protected MeteringSessionException getRSException(){
        MeteringSessionException e = this.rsException;
        this.rsException=null;
        return e;
    }
    
+   /**
+    * Setter dla pola {@link #resException}.
+    * @param e ustawiany wyjątek
+    */
    synchronized protected void setResException(MeteringSessionException e){
        this.resException=e;
    }  
    
    
+   /**
+    * Getter dla  pola {@link #resException}.
+    * @return ustawiany wyjątek
+    */
    synchronized protected MeteringSessionException getResException(){
        MeteringSessionException e = this.resException;
        this.resException=null;
        return e;
    }
    
+   /**
+    * Pobiera <code>size</code> bajtów ze strumienia {@link #inputStream}
+    * i umieszcza w tablicy wynikowej, metoda używana do odczytu danych 
+    * z odpowiedzi koncentratora.
+    * @param size
+    * @return dane z odpowiedzi koncentratora
+    * @throws MeteringSessionException
+    */
    protected byte[] _receiveData(int size) throws MeteringSessionException{
         byte[] ret=new byte[size];
         _readBytes(ret, size);
         return ret;
     }
     
-    protected int _receiveRes()throws MeteringSessionException{
+   /**
+    * Pobiera pierwsze 2 bajty odpowiedzi koncentratora 
+    * ze strumienia {@link #inputStream}.
+    * @return pierwsze 2 bajty odpowiedzi, czyli kod odpowiedzi koncentratora
+    * @throws MeteringSessionException
+    */
+   protected int _receiveRes()throws MeteringSessionException{
         byte[] ret = new byte[2];
         _readBytes(ret, 2);
         return (int)Utils.bytes2long(ret, (byte)2);

@@ -3,17 +3,16 @@ package meteringcomreader;
 import java.util.HashMap;
 
 /**
- *
+ * Opisuje obiekt odpowiedź z koncentratora za pomocą pól <code>resp</code> i <code>data</code>,
+ * zawiera również rozmiar parametrów odpowiedzi w <code>resSizes</code>.
  * @author Juliusz Jezierski
  */
-
 
 
 public class ComResp {
     
     /**
-     * Opisuje obiekt odpowiedź z koncentratora za pomocą pól resp i data, zawiera
-     * również rozmiar parametrów odpowiedzi w resSizes.
+     * Kontener służący do przechowywania rozmiaru danych w danego typu odpowiedzi koncentratora.
      */
     static  protected HashMap 
         <Integer, Integer> resSizes = new HashMap<Integer, Integer>(50);
