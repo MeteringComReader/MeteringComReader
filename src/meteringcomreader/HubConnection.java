@@ -7,15 +7,21 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reprezentuje połączenie do koncentratora.
  * @author Juliusz Jezierski
  */
 public class HubConnection implements Runnable{
+    
+    /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(HubConnection.class);
 
+    
     /**
      * Strumień danych wysyłanych do koncentratora.
      */
@@ -122,7 +128,7 @@ public class HubConnection implements Runnable{
             serialPort.notifyOnDataAvailable(true); 
             
             hc.setHeartBeatThread(new Thread(hc, "HeartBeatThread for hub 0x"+hub.getHubHexId()));
-//            hc.getHeartBeatThread().start(); //TODO: enable heartBeat
+            hc.getHeartBeatThread().start(); //TODO: enable heartBeat
 
         } catch (TooManyListenersException ex) {
             throw new MeteringSessionException(ex);
@@ -157,7 +163,7 @@ public class HubConnection implements Runnable{
 
             if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
                 String comPort = portId.getName();
-System.out.println("Time:"+System.nanoTime()+","+"Found port " + comPort);
+                lgr.info("Time:"+System.nanoTime()+","+"Found port " + comPort);
                 if (hs.isPortUsed(comPort))
                     continue;
 //TODO: usunąć!          
@@ -195,13 +201,13 @@ System.out.println("Time:"+System.nanoTime()+","+"Found port " + comPort);
 
                     hubId = Utils.bytes2long(buf, (byte) 4);
                     hubs.put(Hub.convertHubId2Hex(hubId), new Hub(hubId, comPort));
-System.out.println("Time:"+System.nanoTime()+","+"hub found:" + portId.getName());
+                    lgr.info("Time:"+System.nanoTime()+","+"hub found:" + portId.getName());
                 } catch (MeteringSessionException ex) {
 
-                    // Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    // lgr.warn(null, ex);
 
                 } catch (IOException e) {
-System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
+                    lgr.debug("Time:"+System.nanoTime()+","+e.getMessage());
                 }
                 finally {
                     HubConnection.closePort(inputStream, outputStream, serialPort);
@@ -225,7 +231,7 @@ System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
             try {
                 inputStream.close();
             } catch (IOException ex) {
-                Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+            lgr.warn(null, ex);
             }
         }
 
@@ -234,7 +240,7 @@ System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
                 outputStream.close();
             }
         } catch (IOException ex) {
-            Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+            lgr.warn(null, ex);
         }
         if (serialPort != null) {
             serialPort.close();
@@ -255,19 +261,19 @@ System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
             if (radioSession!=null)
                 radioSession.close();
         } catch (MeteringSessionException ex) {
-            Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+            lgr.warn(null, ex);
         }
         try {
             if (this.hubFlashSession!=null) 
                 hubFlashSession.close();
         } catch (MeteringSessionException ex) {
-            Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+            lgr.warn(null, ex);
         }
         try {
             if (this.loggerFlashSession!=null) 
                 loggerFlashSession.close();
         } catch (MeteringSessionException ex) {
-            Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+            lgr.warn(null, ex);
         }
         serialPort.removeEventListener();
         HubConnection.closePort(inputStream, outputStream, serialPort);
@@ -278,7 +284,8 @@ System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
 
     /** 
      * Tworzy sesję odczytu pamięci flash koncentratora od czasu <code>time</code>
-     * @param time czas, od którego są odczytywane dane z pamięci flash koncentratora
+     * @param time  czas, od którego zarejestrowane dane w koncentratorze mają
+     * być odczytane w tworzonej sesji
      * @return obiekt sesji 
      * @throws MeteringSessionException zgłaszany w przypadku błędu komunikacji
      * z koncentratorem 
@@ -535,7 +542,7 @@ System.out.println("Time:"+System.nanoTime()+","+e.getMessage());
      * z koncentratorem
      */
     synchronized void sendCommand(int command, byte[] data) throws MeteringSessionException {
-System.out.println("Time:"+System.nanoTime()+","+"wait sendCommand 0x"+String.format("%4x", command)+ 
+        lgr.debug("Time:"+System.nanoTime()+","+"wait sendCommand 0x"+String.format("%4x", command)+ 
         " thread: "+Thread.currentThread().getName());        
         while(!canSendCommand){
             try {
@@ -546,7 +553,7 @@ System.out.println("Time:"+System.nanoTime()+","+"wait sendCommand 0x"+String.fo
             }
                 
         }
-System.out.println("Time:"+System.nanoTime()+","+"start sendCommand 0x"+String.format("%4x", command)+ 
+        lgr.debug("Time:"+System.nanoTime()+","+"start sendCommand 0x"+String.format("%4x", command)+ 
         " thread: "+Thread.currentThread().getName());          
         canSendCommand = false;
         if (Thread.currentThread().isInterrupted()) 
@@ -595,7 +602,7 @@ System.out.println("Time:"+System.nanoTime()+","+"start sendCommand 0x"+String.f
             canSendCommand=true;
             notifyAll();
         }
-System.out.println("Time:"+System.nanoTime()+","+"done receiveAck 0x"+String.format("%4x", ack)+ 
+        lgr.debug("Time:"+System.nanoTime()+","+"done receiveAck 0x"+String.format("%4x", ack)+ 
         " thread: "+Thread.currentThread().getName());         
         return ret;
 
@@ -710,7 +717,7 @@ System.out.println("Time:"+System.nanoTime()+","+"done receiveAck 0x"+String.for
                     sendCommand(Utils.hubIdentifictionReq);
 //                try{
                     byte[] res = receiveAck(Utils.hubIdentifictionAck);
-System.out.println("Time:"+System.nanoTime()+","+Utils.bytes2long(res, 4));
+                    lgr.debug("Time:"+System.nanoTime()+","+Utils.bytes2long(res, 4));
 //                }
 //                catch (MeteringSessionTimeoutException e){
                     //ignore it
@@ -720,14 +727,13 @@ System.out.println("Time:"+System.nanoTime()+","+Utils.bytes2long(res, 4));
             }
         }
      catch (MeteringSessionException ex){
-System.out.println("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+ex);         
-//Logger.getLogger(HubConnection.class.getName()).log(Level.SEVERE, null, ex);
+               lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+ex);         
                heartBeatThread=null;
                HubSessionManager.closeHubSession(hub.getHubHexId());
      }
      finally{
-System.out.println("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" stopped.");            
-        }
+        lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" stopped.");            
+     }
         
     }
 

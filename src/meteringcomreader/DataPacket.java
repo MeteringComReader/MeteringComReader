@@ -96,7 +96,8 @@ public class DataPacket {
         sb.append(", fieldLength:");sb.append(fieldLength);
         sb.append(", loggerId:");sb.append(loggerNo);
         sb.append(", encAlg:");sb.append(encAlg);
-        sb.append(", measurmentTime:");sb.append(measurmentTimeStart);
+        sb.append(", secondsTimeEnd:");sb.append(endTime);
+        sb.append(", measurmentTimeStart:");sb.append(measurmentTimeStart);
         sb.append(", measurmentPeriod:");sb.append(measurmentPeriod);
         sb.append(", temperatures:(");
         for (int i=0; i<6; i++){

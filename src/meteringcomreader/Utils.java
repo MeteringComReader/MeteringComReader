@@ -70,20 +70,23 @@ public class Utils {
      * ze strumienia danych równy wyrażony w milisekundach.
      */
     public static final int TIMEOUT=100;
+//    public static final int TIMEOUT=2000;
 
 
     static final int intervalHubFlashMemMode=1;
     static final int overwriteHubFlashMemMode=2;
             
     /**
-     * String reprezentujący Czas Startowy A4P.
+     * String reprezentujący Czas Startowy A4P. Nie używany bo jest równy czasowi
+     * startowemu wykorzystywanemu przez Javą.
      */
     public static  final String timeStartPointStr = "1970-01-01 00:00:00";
     
     /**
-     * Liczba sekund od początku January 1, 1970, 00:00:00 UTC do Czasu Startowego A4P.
+     * Liczba sekund od początku January 1, 1970, 00:00:00 UTC do Czasu Startowego A4P, czyli 0.
      */
-    public static final long timeStartPoint = Timestamp.valueOf(Utils.timeStartPointStr).getTime()/1000; //in seconds
+    public static final long timeStartPoint = 0;
+//    public static final long timeStartPoint = Timestamp.valueOf(Utils.timeStartPointStr).getTime()/1000; //in seconds
     
     /**
      * Kalendarz dla czasu UTC

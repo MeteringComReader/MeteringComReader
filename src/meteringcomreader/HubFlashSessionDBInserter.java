@@ -5,12 +5,19 @@
 package meteringcomreader;
 
 import java.sql.Timestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Juliusz
  */
 public class HubFlashSessionDBInserter extends SessionDBInserter{
+    /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(HubFlashSessionDBInserter.class);
+    
 
     Timestamp start;
     public HubFlashSessionDBInserter(HubConnection hc, Timestamp start) throws MeteringSessionException {
@@ -35,7 +42,7 @@ public class HubFlashSessionDBInserter extends SessionDBInserter{
         try {
             while ((dp = metSess.getNextPacket())!=null) {
                         loadPacket(dp);
-System.out.println("Time:"+System.nanoTime()+","+dp);
+lgr.debug("Time:"+System.nanoTime()+","+dp);
                 }
         } finally {
             try {close();} catch (MeteringSessionException e) {/*ignore it*/}

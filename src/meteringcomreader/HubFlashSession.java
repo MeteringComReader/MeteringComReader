@@ -1,32 +1,72 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 import java.sql.Timestamp;
 
 /**
- *
- * @author Juliusz
+ * Reprezentuje sesję odczytu danych z pamięci flash koncentratora.
+ * @author Juliusz Jezierski
  */
 public class HubFlashSession extends MeteringSession{
+    
+    /**
+     * Tablica odebranych w sesji pakietów danych, 
+     * przechowuje pakiety między kolejnymi wywołaniami
+     * {@link #getNextPacket() }. 
+     */
     protected byte[] packets=null;
-    protected int packetsCounter=0;
+    /*
+     * Licznik pobranych pakietów przez {@link #getNextPacket() }
+     * z tablice {@link #packets}.
+     */
+//    protected int packetsCounter=0;
+    
+    /**
+     * Licznik pobranych bytów danych przez {@link #getNextPacket() }
+     * z tablicy {@link #packets}.
+     */
     protected int bytesCounter=0;
+    /**
+     * Czy odczytano wszystkie dane z koncentratora?
+     * Informacja przekazywana między kolejnymi wywołaniami {@link #getNextPacket() }
+     */
     protected boolean resultReaded=false;
-    protected int packetSize;
+    /**
+     * Wielkość strony pamięci flash koncentratora. Strona jest jednostką odczytu
+     * danych z koncentratora.
+     */
+    protected int flashPageSize;
 
+    /**
+     * Tworzy sesję odczytu danych z pamięci flash koncentratora, w ramach połączenia
+     * z koncentratorem <code>hc</code>, odczytując dane zarejestrowane od czasu
+     * <code>time</code>.
+     * @param hc obiekt połączenia z koncentratorem, w ramach którego jest tworzona
+     * sesja
+     * @param time  czas, od którego zarejestrowane dane w koncentratorze mają
+     * być odczytane w tworzonej sesji
+     * @throws MeteringSessionException zgłaszany w przypadku błędu komunikacji 
+     * z koncentratorem
+     */
     HubFlashSession(HubConnection hc, Timestamp time) throws MeteringSessionException {
         super(hc);
+        if (time==null)
+            throw new MeteringSessionException("HubFlsahSession Starttime can't be null.");
         long timeInt=Utils.timestamp2int(time);
         byte[] timeBytes=Utils.long2bytes(timeInt, 4);
         hc.sendCommand(Utils.startHubFlashSessionReq, timeBytes);
         byte data[]=hc.receiveAck(Utils.startHubFlashSessionRes);
-        packetSize=(data[0]+1)*128;
-        ComResp.setResSize(Utils.getNextHubFlashSessionReq, packetSize); //TODO: generalize to many hubs
+        flashPageSize=(data[0]+1)*128;
+        ComResp.setResSize(Utils.getNextHubFlashSessionReq, flashPageSize); //TODO: generalize to many hubs
     }
 
+    /**
+     * Pobiera kolejny pakiet danych loggera z pamięci flash koncentratora.
+     * @return kolejny pakiet danych loggera z pamięci flash koncentratora lub null 
+     * w przypadku pobrania już wszystkich pakietów.
+     * @throws MeteringSessionException zgłaszany w przypadku błędu  komunikacji 
+     * z koncentratorem lub poprzednie wywołanie zwróciło null sygnalizując,
+     * że wszystkie pakiety zostały wcześniej odczytane.
+     */
     @Override
     public DataPacket getNextPacket() throws MeteringSessionException {
         DataPacket dp=null;
@@ -48,7 +88,7 @@ public class HubFlashSession extends MeteringSession{
                 bytesCounter=0;
             }
             while(dp==null && packets!=null){
-                if (bytesCounter+4>=this.packetSize){
+                if (bytesCounter+4>=this.flashPageSize){
                     packets=null;
                     continue;                    
                 }
@@ -62,7 +102,7 @@ public class HubFlashSession extends MeteringSession{
                 bytesCounter++;
                 if (frameSize==DataPacket.LEN){
                     dp=new DataPacket(packets, bytesCounter);
-                    packetsCounter++;
+//                    packetsCounter++;
                 }
                 bytesCounter+=frameSize;
             }
@@ -70,11 +110,19 @@ public class HubFlashSession extends MeteringSession{
         return dp;
     }
 
+    /**
+     * Niezaimplementowana.
+     * @return UnsupportedOperationException
+     */
     @Override
     public DataPacket regetPrevPacket() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Zamyka sesję odczytu danych z pamięci flash koncentratora.
+     * @throws MeteringSessionException 
+     */
     @Override
     public void close() throws MeteringSessionException {
         hc.sendCommand(Utils.closeHubFlashSessionReq);

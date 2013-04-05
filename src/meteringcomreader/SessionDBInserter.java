@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package meteringcomreader;
 
 import java.math.BigDecimal;
@@ -10,14 +6,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Juliusz
  */
 abstract public class SessionDBInserter {
+    /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(SessionDBInserter.class);
 
     
     protected static String checkPeriodSQL = "select MT_TIME from measurment where mt_ms_id=? and MT_TIME between ? and ?";
@@ -128,10 +130,10 @@ abstract public class SessionDBInserter {
             try {
                 conn.rollback();
             } catch (SQLException ex1) {
-                Logger.getLogger(SessionDBInserter.class.getName()).log(Level.SEVERE, null, ex1);
+                lgr.warn(null, ex1);
             }
             //throw new MeteringSessionException(ex);
-System.out.println("Time:"+System.nanoTime()+","+ex.getMessage());
+lgr.debug("Time:"+System.nanoTime()+","+ex.getMessage());
         } 
 
     }
@@ -178,12 +180,12 @@ System.out.println("Time:"+System.nanoTime()+","+ex.getMessage());
 
     abstract public void mainThread() throws MeteringSessionException;
 
-    /*
+/*    
     public static void main(String[] args) throws MeteringSessionException {
         
         Hubs hubs = HubConnection.discoverHubs();
         if (hubs.isEmpty()){
-            System.out.println("no hubs found");
+            lgr.info("no hubs found");
             return;
         }
         Iterator it =hubs.entrySet().iterator();
@@ -196,7 +198,7 @@ System.out.println("Time:"+System.nanoTime()+","+ex.getMessage());
         }
 
     }
-    */
+*/    
 //MT_ID, MT_MS_ID, MT_PA_ID, MT_TIME, MT_MECH_VALUE1, MT_BATTERY_VOLTAGE
     private void addToBatch(PreparedStatement ps, DataPacket dp, long meId, Timestamp time, int temperature) throws SQLException {
         ps.setLong(1, meId); //MT_ID, 
@@ -237,7 +239,7 @@ System.out.println("Time:"+System.nanoTime()+","+ex.getMessage());
         String hexLoggerNo=dp.getLoggerHexId();
         getLoggerIdPS.setString(1, hexLoggerNo);
         ResultSet rs= getLoggerIdPS.executeQuery();
-        if (!rs.next())  //System.out.println("Logger number:"+dp.loggerNo+" no found");
+        if (!rs.next())  //lgr.debug("Logger number:"+dp.loggerNo+" no found");
                 return false;
         dp.loggerId= rs.getLong(1);
         rs.close();

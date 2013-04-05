@@ -9,8 +9,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -18,6 +19,12 @@ import java.util.logging.Logger;
  * @author Juliusz
  */
 public class HubSessionManager implements Runnable {
+    /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(HubSessionManager.class);
+
+
     static protected Hubs discoveredHubs;
     static protected HubsSessions hubsSessions = new HubsSessions(10);
     
@@ -128,7 +135,7 @@ public class HubSessionManager implements Runnable {
             it.remove();
 //            getHubsSessions().remove(pair.getKey());
         }
-System.out.println("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessions().isEmpty());
+lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessions().isEmpty());
     }
 
     static void closeAllInserters() {
@@ -140,12 +147,12 @@ System.out.println("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+get
             try {
                 ins.close();
             } catch (MeteringSessionException ex) {
-                Logger.getLogger(HubSessionManager.class.getName()).log(Level.SEVERE, null, ex);
+                lgr.warn(null, ex);
             }
             it.remove();
 //            getHubsSessions().remove(pair.getKey());
         }
- System.out.println("Time:"+System.nanoTime()+","+"is radioInserters empty "+radioInserters.isEmpty());
+ lgr.debug("Time:"+System.nanoTime()+","+"is radioInserters empty "+radioInserters.isEmpty());
     }    
 
     @Override
@@ -162,9 +169,9 @@ System.out.println("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+get
                     //ignore it;
                 }
             } catch(MeteringSessionSPException ex){
-                    Logger.getLogger(HubSessionManager.class.getName()).log(Level.SEVERE, null, ex);
+                    lgr.warn(null, ex);
             } catch(MeteringSessionException ex){
-                    Logger.getLogger(HubSessionManager.class.getName()).log(Level.SEVERE, null, ex);
+                    lgr.warn(null, ex);
             }
         }
       
@@ -200,7 +207,7 @@ System.out.println("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+get
     }
     
     protected static void startHubSessionAndRS(String hubNo) throws MeteringSessionException{
-        HubConnection hc = HubSessionManager.connectHubAndStartRS(hubNo, 60); //TODO przekazać parametr do wywołania
+        HubConnection hc = HubSessionManager.connectHubAndStartRS(hubNo, 61); //TODO 1)przekazać parametr do wywołania(?), 2)zmienić timeout
         RadioSessionDBInserter sessionInserter = RadioSessionDBInserter.createRadioSessionDBInserter(hc);        
         sessionInserter.mainThread(); 
         radioInserters.addInserter(hubNo, sessionInserter);
@@ -215,19 +222,23 @@ System.out.println("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+get
             startHubSessionAndRS(hub.getHubHexId());
         }
     }
+    
+   public static  void addShutdownHook(){
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {try {
+lgr.info("stopping hubSessionManager")        ;
+                    HubSessionManager.stopHubSessionManager();
+                } catch (MeteringSessionException ex) {
+                    lgr.warn(null, ex);
+                }
+              }
+            });       
+   }
 
     public static void main(String args[]) throws MeteringSessionException, InterruptedException{
         
-Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-    public void run() {try {
-System.out.println("stopping hubSessionManager")        ;
-                    HubSessionManager.stopHubSessionManager();
-                } catch (MeteringSessionException ex) {
-                    Logger.getLogger(HubSessionManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
- }
-});
+        addShutdownHook();
         HubSessionManager.startHubSessionManager();
         
         Thread.sleep(1000*60*300);

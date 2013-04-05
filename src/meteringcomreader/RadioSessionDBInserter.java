@@ -4,14 +4,21 @@
  */
 package meteringcomreader;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Juliusz
  */
 public class RadioSessionDBInserter extends SessionDBInserter implements Runnable{
+    /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(RadioSessionDBInserter.class);
+    
      protected boolean  shouldRun=true;
      protected Thread thread=null;
 
@@ -47,7 +54,7 @@ public class RadioSessionDBInserter extends SessionDBInserter implements Runnabl
             while (isShouldRun()) {
                 dp = metSess.getNextPacket();
                 loadPacket(dp);
-System.out.println("Time:"+System.nanoTime()+","+dp);
+lgr.debug("Time:"+System.nanoTime()+","+dp);
             } 
         }catch (MeteringSessionException tout) {
             
@@ -56,7 +63,7 @@ System.out.println("Time:"+System.nanoTime()+","+dp);
             setThread(null);
             //TODO: close remaining resoureses
         }
-System.out.println("Time:"+System.nanoTime()+","+"Thread stoped: "+Thread.currentThread().getName());
+lgr.debug("Time:"+System.nanoTime()+","+"Thread stoped: "+Thread.currentThread().getName());
     }
     
     @Override

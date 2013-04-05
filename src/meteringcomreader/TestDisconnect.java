@@ -6,8 +6,10 @@ package meteringcomreader;
 
 import gnu.io.SerialPortEvent;
 import java.sql.Timestamp;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,7 +47,7 @@ System.out.println("closing session finished");
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(TestDisconnect.class.getName()).log(Level.SEVERE, null, ex);
+                lgr.warn(null, ex);
             }
         while((dp=s.getNextPacket())!=null){
             System.out.println(dp);
@@ -70,7 +72,7 @@ System.out.println("closing session finished");
                                     try {
                                         Thread.sleep(1000);
                                     } catch (InterruptedException ex) {
-                                        Logger.getLogger(TestDisconnect.class.getName()).log(Level.SEVERE, null, ex);
+                                        lgr.warn(null, ex);
                                     }
                             }
                         }
