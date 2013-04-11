@@ -204,14 +204,14 @@ lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throw
         int len;
         
         
-//System.out.print("Time:"+System.nanoTime()+", ");                
+System.out.print("Time:"+System.nanoTime()+", ");                
         for(int i=0; i<size; i++){           
             try {
                 len=this.inputStream.read(ret);
                 if(len==-1) 
                     throw new MeteringSessionException("Serial EOF");
                 if(len==0) {
-//lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
+lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
                     throw new MeteringSessionTimeoutException("Serial port read timeout");
                 }
 System.out.print(String.format("%0#2X", ret[0])+',');               

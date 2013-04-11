@@ -42,7 +42,7 @@ public class HubFlashSessionDBInserter extends SessionDBInserter{
         try {
             while ((dp = metSess.getNextPacket())!=null) {
                         loadPacket(dp);
-lgr.debug("Time:"+System.nanoTime()+","+dp);
+lgr.info("Time:"+System.nanoTime()+","+dp);
                 }
         } finally {
             try {close();} catch (MeteringSessionException e) {/*ignore it*/}

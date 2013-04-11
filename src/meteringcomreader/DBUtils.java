@@ -16,7 +16,7 @@ public class DBUtils {
     /**
      * Opis połączenia do bazy danych.
      */
-    protected static String connDesc = "jdbc:oracle:thin:@//localhost:1521/XE";
+    protected static String connDesc = "jdbc:oracle:thin:@//admlab1.cs.put.poznan.pl:12121/XE";
     /**
      * Nazwa użytkownika bazy danych.
      */

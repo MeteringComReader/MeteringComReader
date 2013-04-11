@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import meteringcomreader.gui.LaunchGui;
+import org.apache.log4j.PropertyConfigurator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,6 +240,8 @@ lgr.info("stopping hubSessionManager")        ;
 
     public static void main(String args[]) throws MeteringSessionException, InterruptedException{
         
+        PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
+
         addShutdownHook();
         HubSessionManager.startHubSessionManager();
         

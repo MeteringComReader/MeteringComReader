@@ -6,19 +6,20 @@ package meteringcomreader.gui;
 
 /**
  *
- * @author Juliusz
+ * @author Juliusz Jezierski
  */
 
+import com.omniscient.log4jcontrib.swingappender.ui.SwingAppenderUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import meteringcomreader.HubSessionManager;
 import meteringcomreader.MeteringSessionException;
+import meteringcomreader.StdOutErrLog;
+import org.apache.log4j.PropertyConfigurator;
  
 public class LaunchGui {
     /**
@@ -26,8 +27,13 @@ public class LaunchGui {
      */
     private static final Logger lgr = LoggerFactory.getLogger(LaunchGui.class);
     
+    static private JTextArea textComponent;
+    static private Image icon;
+    
     public static void main(String[] args) {
         /* Use an appropriate Look and Feel */
+        PropertyConfigurator.configure(LaunchGui.class.getResource("log4j.properties"));
+        StdOutErrLog.tieSystemOutAndErrToLog();
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -58,8 +64,9 @@ public class LaunchGui {
             return;
         }
         final PopupMenu popup = new PopupMenu();
+        icon=createImage("bulb.gif", "tray icon");
         final TrayIcon trayIcon =
-                new TrayIcon(createImage("bulb.gif", "tray icon"));
+                new TrayIcon(icon);
         final SystemTray tray = SystemTray.getSystemTray();
          
         // Create a popup menu components
@@ -69,36 +76,39 @@ public class LaunchGui {
          
         //Add components to popup menu
 
-        popup.add(showConsole);
+//        popup.add(showConsole);
         popup.add(exitItem);
          
         trayIcon.setPopupMenu(popup);
          
+        initMesgConsole();
+                
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {
-            lgr.debug("TrayIcon could not be added.");
+            lgr.warn("TrayIcon could not be added.");
             return;
-        }
+        }      
          
-        trayIcon.addActionListener(new ActionListener() {
+       trayIcon.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,
-                        "This dialog box is run from System Tray");
-            }
+                createAndShowConsole();            }
         });
-         
-         
+                
         showConsole.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,
-                        "consola");
+//                JOptionPane.showMessageDialog(null,"consola");
+                createAndShowConsole();
             }
         });
          
          
         exitItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
+//                SwingAppenderUI.getInstance().getJframe().setVisible(false);
                 tray.remove(trayIcon);
                 try {
                     HubSessionManager.stopHubSessionManager();
@@ -126,5 +136,20 @@ public class LaunchGui {
             return (new ImageIcon(imageURL, description)).getImage();
         }
     }
+        
+    private static void createAndShowConsole() {
+//        SwingAppenderUI.getInstance().getJframe().setVisible(true);
+    }
+
+    
+    protected static void initMesgConsole(){    
+        /*        
+       Frame frame = SwingAppenderUI.getInstance().getJframe();
+       frame.setIconImage(icon);
+       frame.setVisible(false);
+       */
+
+    }
+    
 }
 

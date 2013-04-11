@@ -1,0 +1,578 @@
+0    [HubSessionManagerThread] INFO  meteringcomreader.StdOutErrLog  - WARNING:  RXTX Version mismatch
+	Jar version = RXTX-2.2pre1
+	native lib Version = RXTX-2.1-7
+933  [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4393798106727,Found port COM3
+1469 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4394326893080,Found port COM4
+2000 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4394856032434,Found port COM9
+2393 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4395261338386,hub found:COM9
+3907 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4396771206255,wait sendCommand 0x   2 thread: HubSessionManagerThread
+3907 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4396771910718,start sendCommand 0x   2 thread: HubSessionManagerThread
+3923 [HubSessionManagerThread] DEBUG meteringcomreader.ComReadDispatch  - Time:4396784334671, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HubSessionManagerThread
+3938 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396794599041, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+3938 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396794825778 serialEvent loopNo:1
+3938 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4396794979374, 
+3938 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2,
+3938 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+3938 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396796295911, _readBytes size:2
+3938 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4396800239363,done receiveAck 0x   2 thread: HubSessionManagerThread
+3938 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396800850282 serialEvent loopNo:2
+3938 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4396802264982, 
+4063 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396919273949,Thread:Thread-6 Serial port read timeout in _readBytes size2
+4110 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4396969052524, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400554105824, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400554320628 serialEvent loopNo:1
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4400554419561, 
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400555321889, _readBytes size:2
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4400555445074, 
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400555871986, _readBytes size:1
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4400555989011, 
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA9,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XC1,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X5B,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X20,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2A,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+7698 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB2,
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400564746293, _readBytes size:29
+7698 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400564876022, received new DP 
+7714 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400570435889, new DP inserted into queue
+7714 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400570558304 serialEvent loopNo:2
+7714 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4400570655697, 
+7838 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4400695665898,Thread:Thread-6 Serial port read timeout in _readBytes size2
+8306 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4401175661848,appId:17741, fieldLength:22, loggerId:596237993, encAlg:0, secondsTimeEnd:1365531585, measurmentTimeStart:2013-04-09 20:04:45.0, measurmentPeriod:180, temperatures:(211 ,211 ,211 ,211 ,211 ,210 ,), batteryVoltage:42
+12908 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4405764517708,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+12908 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4405764956939,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+12908 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4405772053536, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+12924 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405780010886, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+12924 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405780136765 serialEvent loopNo:1
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4405780236083, 
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+12924 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405780972112, _readBytes size:2
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4405781116469, 
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+12924 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405782428772, _readBytes size:4
+12924 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405782614704 serialEvent loopNo:2
+12924 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4405782716716, 
+12924 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4405782689769,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+12924 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4405782934214,2018915346
+13049 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405904903292,Thread:Thread-6 Serial port read timeout in _readBytes size2
+13080 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4405939031244, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+21925 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4414781346286,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+21925 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4414781782822,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+21925 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4414789050722, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+21956 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414812491242, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+21956 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414812621356 serialEvent loopNo:1
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4414812719134, 
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+21956 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414813462092, _readBytes size:2
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4414813614533, 
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+21956 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414814992662, _readBytes size:4
+21956 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414815179749 serialEvent loopNo:2
+21956 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4414815302164, 
+21956 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4414815222864,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+21956 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4414815485401,2018915346
+22081 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414937320900,Thread:Thread-6 Serial port read timeout in _readBytes size2
+22097 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4414955034099, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+24754 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4417614959864,Found port COM3
+24769 [AWT-EventQueue-0] INFO  meteringcomreader.StdOutErrLog  - getting UI Instance
+25167 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4418024876776,Found port COM4
+25698 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4418554160103,Found port COM9
+30971 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4423826868058,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+30971 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4423827366956,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+30971 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4423834043570, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+30986 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423845040119, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+31002 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423858036111, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+31002 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423858158526 serialEvent loopNo:1
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4423858280556, 
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+31002 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423859011580, _readBytes size:2
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4423859119367, 
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+31002 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423861354785, _readBytes size:4
+31002 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423861491059 serialEvent loopNo:2
+31002 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4423861584987, 
+31002 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4423861609624,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+31002 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4423861840980,2018915346
+31127 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4423982816881,Thread:Thread-6 Serial port read timeout in _readBytes size2
+40003 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4432859410006,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+40003 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4432860212632,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+40003 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4432867063244, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+40019 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432874880087, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+40019 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432874996342 serialEvent loopNo:1
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4432875089886, 
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+40019 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432875801663, _readBytes size:2
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4432875941785, 
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+40019 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432877307981, _readBytes size:4
+40019 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432877485059 serialEvent loopNo:2
+40019 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4432877581683, 
+40019 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4432877567439,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+40019 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4432877944308,2018915346
+40144 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4432999629290,Thread:Thread-6 Serial port read timeout in _readBytes size2
+40206 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4433065035777, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+47164 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4440019905116,wait sendCommand 0xf002 thread: AWT-EventQueue-0
+47164 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4440020298538,start sendCommand 0xf002 thread: AWT-EventQueue-0
+47164 [RadioSessionPinger for hub:4D4578563412] DEBUG meteringcomreader.RadioSession  - Time:4440021540009,Thread stoped: RadioSessionPinger for hub:4D4578563412
+47164 [AWT-EventQueue-0] DEBUG meteringcomreader.ComReadDispatch  - Time:4440027040978, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: AWT-EventQueue-0
+47195 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4440050896092, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+47195 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4440051190965 serialEvent loopNo:1
+47195 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4440051287973, 
+47195 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2,
+47195 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X8,
+47195 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4440052023617, _readBytes size:2
+47195 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4440052180678,done receiveAck 0x 802 thread: AWT-EventQueue-0
+47195 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4440052440905 serialEvent loopNo:2
+47195 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4440052532139, 
+47195 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4440052617984,Thread:Thread-6 Serial port read timeout in _readBytes size2
+47195 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4440052631842,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+47195 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4440052863968,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+47351 [AWT-EventQueue-0] DEBUG meteringcomreader.HubSessionManager  - Time:4440207035851,is hubsSessionsMap empty true
+47351 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4440207471617,Thread stoped: radioSessionDBInserter for hub: 4D4578563412
+47398 [AWT-EventQueue-0] DEBUG meteringcomreader.HubSessionManager  - Time:4440266482505,is radioInserters empty true
+0    [HubSessionManagerThread] INFO  meteringcomreader.StdOutErrLog  - WARNING:  RXTX Version mismatch
+	Jar version = RXTX-2.2pre1
+	native lib Version = RXTX-2.1-7
+915  [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4715303467958,Found port COM3
+1352 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4715734755116,Found port COM4
+1884 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4716264024969,Found port COM9
+2259 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4716653631409,hub found:COM9
+3633 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4718020420953,wait sendCommand 0x   2 thread: HubSessionManagerThread
+3633 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4718020980288,start sendCommand 0x   2 thread: HubSessionManagerThread
+3649 [HubSessionManagerThread] DEBUG meteringcomreader.ComReadDispatch  - Time:4718033371520, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HubSessionManagerThread
+3664 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718044453144, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+3664 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718044638691 serialEvent loopNo:1
+3664 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4718044804990, 
+3664 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2,
+3664 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+3664 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718046324782, _readBytes size:2
+3664 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718050371017 serialEvent loopNo:2
+3664 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4718050574271, 
+3664 [HubSessionManagerThread] DEBUG meteringcomreader.HubConnection  - Time:4718051627116,done receiveAck 0x   2 thread: HubSessionManagerThread
+3789 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718168961367,Thread:Thread-6 Serial port read timeout in _readBytes size2
+3836 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4718218078594, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720259408620, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720259708113 serialEvent loopNo:1
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4720259934850, 
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720260842568, _readBytes size:2
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4720260981536, 
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720261445788, _readBytes size:1
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4720261598999, 
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA5,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X5D,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD5,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X40,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2C,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X62,
+5879 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB3,
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720270516806, _readBytes size:29
+5879 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720270633446, received new DP 
+5895 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720277997585, new DP inserted into queue
+5895 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720278149641 serialEvent loopNo:2
+5895 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4720278266282, 
+6020 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4720407331956,Thread:Thread-6 Serial port read timeout in _readBytes size2
+6581 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4720966810176,appId:17741, fieldLength:22, loggerId:596237989, encAlg:0, secondsTimeEnd:1365531905, measurmentTimeStart:2013-04-09 20:10:05.0, measurmentPeriod:180, temperatures:(213 ,212 ,211 ,211 ,211 ,211 ,), batteryVoltage:44
+12634 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4727014722888,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+12634 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4727015216782,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+12634 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4727022102425, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+12650 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727029885776, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+12650 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727030135226 serialEvent loopNo:1
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4727030261490, 
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+12650 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727031069890, _readBytes size:2
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4727031235804, 
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+12650 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727032641650, _readBytes size:4
+12650 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727032845290 serialEvent loopNo:2
+12650 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4727032963471, 
+12650 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4727032901108,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+12650 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4727033179429,2018915346
+12775 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727154583781,Thread:Thread-6 Serial port read timeout in _readBytes size2
+12837 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4727220090356, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729213948825, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729214211748 serialEvent loopNo:1
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4729214332623, 
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729215212239, _readBytes size:2
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4729215370840, 
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729215857804, _readBytes size:1
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4729216024489, 
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA8,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X3A,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD6,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X70,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD8,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X90,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDB,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XF0,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X29,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X65,
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB2,
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729225588630, _readBytes size:29
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729225718744, received new DP 
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729225945481, new DP inserted into queue
+14834 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729226056732 serialEvent loopNo:2
+14834 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4729226169138, 
+14959 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4729338569455,Thread:Thread-6 Serial port read timeout in _readBytes size2
+15380 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4729763433297,appId:17741, fieldLength:22, loggerId:596237992, encAlg:0, secondsTimeEnd:1365522955, measurmentTimeStart:2013-04-09 17:40:55.0, measurmentPeriod:180, temperatures:(214 ,215 ,216 ,217 ,219 ,223 ,), batteryVoltage:41
+21651 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4736031149960,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+21651 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4736031656172,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+21651 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4736039100766, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+21682 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736062231784, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+21682 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736062395389 serialEvent loopNo:1
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4736062510874, 
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+21682 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736063475565, _readBytes size:2
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4736063600675, 
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+21682 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736065171665, _readBytes size:4
+21682 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736065321027 serialEvent loopNo:2
+21682 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4736065429583, 
+21682 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4736065849181,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+21682 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4736066116338,2018915346
+21807 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736187070296,Thread:Thread-6 Serial port read timeout in _readBytes size2
+21854 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4736236079352, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+24494 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4738880780637,Found port COM3
+24907 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4739289171212,Found port COM4
+25438 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4739818683971,Found port COM9
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741144515352, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741144864119 serialEvent loopNo:1
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4741144986149, 
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741145849597, _readBytes size:2
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4741145988565, 
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741146425486, _readBytes size:1
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4741146534812, 
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA7,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X15,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X5D,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD7,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X70,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD7,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X60,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD6,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X60,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2D,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X65,
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB2,
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741155090764, _readBytes size:29
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741155192006, received new DP 
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741155615454, new DP inserted into queue
+26764 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741155715541 serialEvent loopNo:2
+26764 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4741155814474, 
+26889 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4741269202578,Thread:Thread-6 Serial port read timeout in _readBytes size2
+27622 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4742017083416,appId:17741, fieldLength:22, loggerId:596237991, encAlg:0, secondsTimeEnd:1365531925, measurmentTimeStart:2013-04-09 20:10:25.0, measurmentPeriod:180, temperatures:(215 ,215 ,215 ,214 ,214 ,214 ,), batteryVoltage:45
+30696 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4745077024349,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+30696 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4745077460884,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+30696 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4745084097848, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+30727 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745106855077, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+30727 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745107002899 serialEvent loopNo:1
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4745107106836, 
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+30727 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745107869042, _readBytes size:2
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4745108014554, 
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+30727 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745109317233, _readBytes size:4
+30727 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745109504704 serialEvent loopNo:2
+30727 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4745109609411, 
+30727 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4745109561677,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+30727 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4745109804967,2018915346
+30852 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745231630842,Thread:Thread-6 Serial port read timeout in _readBytes size2
+30898 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4745281230415, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752064496074, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752064744753 serialEvent loopNo:1
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4752064848305, 
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752065679802, _readBytes size:2
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4752065821850, 
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752066273014, _readBytes size:1
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4752066400433, 
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA6,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1F,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X5D,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD5,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X50,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD4,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X40,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X28,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X63,
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB3,
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752078205382, _readBytes size:29
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752078304315, received new DP 
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752078507955, new DP inserted into queue
+37684 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752078601113 serialEvent loopNo:2
+37684 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4752078693502, 
+37809 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4752189230264,Thread:Thread-6 Serial port read timeout in _readBytes size2
+38340 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4752725893127,appId:17741, fieldLength:22, loggerId:596237990, encAlg:0, secondsTimeEnd:1365531935, measurmentTimeStart:2013-04-09 20:10:35.0, measurmentPeriod:180, temperatures:(213 ,213 ,212 ,212 ,211 ,211 ,), batteryVoltage:40
+39728 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4754108227432,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+39728 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4754108680906,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+39728 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4754116100863, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+39759 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754139296168, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+39759 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754139419738 serialEvent loopNo:1
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4754139514051, 
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+39759 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754140240841, _readBytes size:2
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4754140378654, 
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+39759 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754141624745, _readBytes size:4
+39759 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754141806827 serialEvent loopNo:2
+39759 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4754141906915, 
+39759 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4754141865725,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+39759 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4754142100161,2018915346
+39884 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754264022659,Thread:Thread-6 Serial port read timeout in _readBytes size2
+39900 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4754282080390, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760550900326, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760551085488 serialEvent loopNo:1
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4760551181726, 
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760551714885, _readBytes size:2
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4760551773398, 
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1D,
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760551931229, _readBytes size:1
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4760551968184, 
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X4D,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X45,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X16,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XA9,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XDE,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X89,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X23,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X29,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X5D,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X64,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X51,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB4,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X0,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD3,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X30,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XD,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2A,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X41,
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XB2,
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760555374242, _readBytes size:29
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760555428521, received new DP 
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760555526299, new DP inserted into queue
+46171 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760555563639 serialEvent loopNo:2
+46171 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4760555599440, 
+46296 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4760675628742,Thread:Thread-6 Serial port read timeout in _readBytes size2
+46831 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4761216524542,Found port COM3
+47344 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4761726957136,Found port COM4
+47797 [HubSessionManagerThread] INFO  meteringcomreader.HubConnection  - Time:4762177425315,Found port COM9
+48764 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4763144561931,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+48764 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4763144983839,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+48764 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4763152091215, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763162131927, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: Thread-6
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763162405628, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763162700887 serialEvent loopNo:1
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4763162804054, 
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763163563180, _readBytes size:2
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4763163671352, 
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763164885107, _readBytes size:4
+48780 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763165017530 serialEvent loopNo:2
+48780 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4763165112998, 
+48780 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4763165144565,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+48780 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4763165379001,2018915346
+48905 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4763284994479,Thread:Thread-6 Serial port read timeout in _readBytes size2
+49451 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4763835543729,appId:17741, fieldLength:22, loggerId:596237993, encAlg:0, secondsTimeEnd:1365531945, measurmentTimeStart:2013-04-09 20:10:45.0, measurmentPeriod:180, temperatures:(211 ,211 ,211 ,211 ,211 ,211 ,), batteryVoltage:42
+57781 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772161309669,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+57781 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772161737351,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+57781 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4772168140649, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: HeartBeatThread for hub 0x4D4578563412
+57797 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772176907169, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+57797 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772177041132 serialEvent loopNo:1
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4772177138910, 
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X1,
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0XAA,
+57797 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772177891877, _readBytes size:2
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4772177999664, 
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X12,
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X34,
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X56,
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X78,
+57797 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772179213419, _readBytes size:4
+57797 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772179343533 serialEvent loopNo:2
+57797 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4772179438616, 
+57797 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772180529956,done receiveAck 0xaa01 thread: HeartBeatThread for hub 0x4D4578563412
+57797 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772180817515,2018915346
+57922 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772301706801,Thread:Thread-6 Serial port read timeout in _readBytes size2
+57922 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4772307882977,wait sendCommand 0xf002 thread: AWT-EventQueue-0
+57922 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4772308043117,start sendCommand 0xf002 thread: AWT-EventQueue-0
+57922 [RadioSessionPinger for hub:4D4578563412] DEBUG meteringcomreader.RadioSession  - Time:4772308543555,Thread stoped: RadioSessionPinger for hub:4D4578563412
+57922 [AWT-EventQueue-0] DEBUG meteringcomreader.ComReadDispatch  - Time:4772315041166, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],2, thread: AWT-EventQueue-0
+57937 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772317287748, serialEvent: gnu.io.SerialPortEvent[source=//./COM9],1, thread: Thread-6
+57937 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772317336637 serialEvent loopNo:1
+57937 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4772317372053, 
+57937 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X2,
+57937 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - 0X8,
+57937 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772317682324, _readBytes size:2
+57937 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772317748921 serialEvent loopNo:2
+57937 [Thread-6] INFO  meteringcomreader.StdOutErrLog  - Time:4772317783567, 
+57937 [AWT-EventQueue-0] DEBUG meteringcomreader.HubConnection  - Time:4772317850164,done receiveAck 0x 802 thread: AWT-EventQueue-0
+57937 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772317956026,wait sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+57937 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4772318061503,start sendCommand 0x   1 thread: HeartBeatThread for hub 0x4D4578563412
+58062 [Thread-6] DEBUG meteringcomreader.ComReadDispatch  - Time:4772442141659,Thread:Thread-6 Serial port read timeout in _readBytes size2
+58218 [AWT-EventQueue-0] DEBUG meteringcomreader.HubSessionManager  - Time:4772598227525,is hubsSessionsMap empty true
+58218 [radioSessionDBInserter for hub: 4D4578563412] DEBUG meteringcomreader.RadioSessionDBInserter  - Time:4772598716029,Thread stoped: radioSessionDBInserter for hub: 4D4578563412
+58249 [AWT-EventQueue-0] DEBUG meteringcomreader.HubSessionManager  - Time:4772643220757,is radioInserters empty true
+58951 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.ComReadDispatch  - Time:4773331360452,HeartBeatThread for hub 0x4D4578563412 throws exception  in getNextResp Timeout during waiting for response
+58951 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4773331629919,Thread:HeartBeatThread for hub 0x4D4578563412meteringcomreader.MeteringSessionTimeoutException: Timeout during waiting for response
+58951 [HeartBeatThread for hub 0x4D4578563412] DEBUG meteringcomreader.HubConnection  - Time:4773331948659,Thread:HeartBeatThread for hub 0x4D4578563412 stopped.
