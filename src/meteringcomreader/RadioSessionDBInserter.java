@@ -54,10 +54,10 @@ public class RadioSessionDBInserter extends SessionDBInserter implements Runnabl
             while (isShouldRun()) {
                 dp = metSess.getNextPacket();
                 loadPacket(dp);
-lgr.debug("Time:"+System.nanoTime()+","+dp);
+                lgr.info("Time:"+System.nanoTime()+","+dp);
             } 
         }catch (MeteringSessionException tout) {
-            
+            lgr.debug("Exception while processing new packet: "+tout.getMessage());            
         }
         finally{
             setThread(null);

@@ -128,7 +128,7 @@ public class HubConnection implements Runnable{
             serialPort.notifyOnDataAvailable(true); 
             
             hc.setHeartBeatThread(new Thread(hc, "HeartBeatThread for hub 0x"+hub.getHubHexId()));
-            hc.getHeartBeatThread().start(); //TODO: enable heartBeat
+//            hc.getHeartBeatThread().start(); //TODO: enable heartBeat
 
         } catch (TooManyListenersException ex) {
             throw new MeteringSessionException(ex);

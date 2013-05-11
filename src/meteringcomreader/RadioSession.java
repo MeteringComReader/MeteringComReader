@@ -43,8 +43,8 @@ public class RadioSession extends MeteringSession implements Runnable{
             super(hc);
             this.timeout=timeout;
             startRadioSession();
-            pinger=new Thread(this,"RadioSessionPinger for hub:"+hc.hub.getHubHexId()); //TODO: enable pinger
-            pinger.start();
+//            pinger=new Thread(this,"RadioSessionPinger for hub:"+hc.hub.getHubHexId()); //TODO: enable pinger
+//            pinger.start();
             
     }
     

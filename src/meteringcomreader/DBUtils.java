@@ -3,12 +3,21 @@ package meteringcomreader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Zawiera pomocnicze funkcje statyczne operujące na bazie danych
  * @author Juliusz Jezierski
  */
 public class DBUtils {
+        /**
+     * Utworzenie loggera systemowego
+     */
+    private static final Logger lgr = LoggerFactory.getLogger(ComReadDispatch.class);
+    
+    protected static ResourceBundle rb = ResourceBundle.getBundle ("meteringcomreader.db");
     /**
      * Tekst polecenia ustawiającego strefę czasową polecenia na UTC.
      */
@@ -16,15 +25,15 @@ public class DBUtils {
     /**
      * Opis połączenia do bazy danych.
      */
-    protected static String connDesc = "jdbc:oracle:thin:@//admlab1.cs.put.poznan.pl:12121/XE";
+    protected static String connDesc = rb.getString("connDesc");
     /**
      * Nazwa użytkownika bazy danych.
      */
-    protected static String user = "meter";
+    protected static String user = rb.getString("user");
     /**
      * Hasło użytkownika bazy danych.
      */
-    protected static String pass = "m3t3ring";
+    protected static String pass = rb.getString("pass");
 
     /**
      * Tworzy połączenie do bazy danych i ustawia strefę czasową na 
@@ -37,7 +46,9 @@ public class DBUtils {
         Connection conn=null;
         try {
             Class.forName("oracle.jdbc.OracleDriver");
+            lgr.info("Trying to connect to:"+connDesc+",user:"+user+",pwd:"+pass);
             conn = DriverManager.getConnection(connDesc, user, pass);
+            lgr.info("Connected to:"+connDesc);
             conn.setAutoCommit(false);
             conn.createStatement().execute(setTimezoneToUTC);
         } catch (SQLException ex) {

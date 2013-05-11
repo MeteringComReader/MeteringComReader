@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import meteringcomreader.gui.LaunchGui;
+import java.util.logging.Level;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.slf4j.Logger;
@@ -229,7 +229,7 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {try {
-lgr.info("stopping hubSessionManager")        ;
+                    lgr.info("stopping hubSessionManager")        ;
                     HubSessionManager.stopHubSessionManager();
                 } catch (MeteringSessionException ex) {
                     lgr.warn(null, ex);
@@ -240,8 +240,7 @@ lgr.info("stopping hubSessionManager")        ;
 
     public static void main(String args[]) throws MeteringSessionException, InterruptedException{
         
-        PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
-
+     PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
         addShutdownHook();
         HubSessionManager.startHubSessionManager();
         

@@ -100,19 +100,19 @@ lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
                         frameSize = 0xFF & data[0];
                         if (frameSize==DataPacket.LEN){                           
                             data = _receiveData(DataPacket.LEN);
-lgr.debug("Time:"+System.nanoTime()+", received new DP ");                            
-                            DataPacket dp = new DataPacket(data);
+                            lgr.debug("Time:"+System.nanoTime()+", received new DP ");                            
+                            DataPacket dp = new DataPacket(data);                            
                             rsData.add(dp);
-lgr.debug("Time:"+System.nanoTime()+", new DP inserted into queue");                            
+                            lgr.debug("Time:"+System.nanoTime()+", new DP inserted into queue");                            
                         }
                         else{
                             data =_receiveData(frameSize); //unknown frame format
- lgr.debug("Time:"+System.nanoTime()+", unknown frame format, len:"+frameSize);                          
+                            lgr.debug("Time:"+System.nanoTime()+", unknown frame format, len:"+frameSize);                          
                         }
                     } catch (MeteringSessionTimeoutException ex) {
                         return;  //if timeout to get next data then exit
                     } catch (MeteringSessionException ex) {
-lgr.debug("Time:"+System.nanoTime()+","+" exeption dedected in serialEvent"+ex);                                   
+                        lgr.debug("Time:"+System.nanoTime()+","+" exeption dedected in serialEvent"+ex);                                   
                         setRSException(ex);
                         return;
                     }
@@ -202,27 +202,34 @@ lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throw
     protected int _readBytes(byte[]buf, int size) throws MeteringSessionException{
         byte ret[] = new byte[1];
         int len;
+        StringBuilder sb = new StringBuilder(1000);
         
-        
-System.out.print("Time:"+System.nanoTime()+", ");                
-        for(int i=0; i<size; i++){           
-            try {
-                len=this.inputStream.read(ret);
-                if(len==-1) 
-                    throw new MeteringSessionException("Serial EOF");
-                if(len==0) {
-lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
-                    throw new MeteringSessionTimeoutException("Serial port read timeout");
+        sb.append("Time:");
+        sb.append(System.nanoTime());
+        sb.append(", ");
+        try{
+            for(int i=0; i<size; i++){           
+                try {
+                    len=this.inputStream.read(ret);
+                    if(len==-1) 
+                        throw new MeteringSessionException("Serial EOF");
+                    if(len==0) {
+                        lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
+                        throw new MeteringSessionTimeoutException("Serial port read timeout");
+                    }
+                    sb.append(String.format("%0#2X", ret[0]));
+                    sb.append(',');               
+                    buf[i]=ret[0];
+                } catch (IOException ex) {
+                    lgr.debug("Time:"+System.nanoTime()+","+"IOException dedected in _readBytes"+ex);                
+                    throw new MeteringSessionSPException(ex);
                 }
-System.out.print(String.format("%0#2X", ret[0])+',');               
-                buf[i]=ret[0];
-            } catch (IOException ex) {
-lgr.debug("Time:"+System.nanoTime()+","+"IOException dedected in _readBytes"+ex);                
-                new MeteringSessionSPException(ex);
             }
         }
-System.out.println();        
-lgr.debug("Time:"+System.nanoTime()+","+" _readBytes size:"+size);                
+        finally{
+            lgr.debug(sb.toString());                
+            lgr.debug("Time:"+System.nanoTime()+","+" _readBytes size:"+size);                
+        }
 
         return size;
     }
