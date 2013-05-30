@@ -5,12 +5,16 @@
 package meteringcomreader;
 
 import java.sql.Timestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Juliusz
  */
 public class LoggerFlashSession  extends MeteringSession{
+    private static final Logger lgr = LoggerFactory.getLogger(LoggerFlashSession.class);
+
     protected final long loggerId;
     
     protected byte[] packets=null;
@@ -21,19 +25,58 @@ public class LoggerFlashSession  extends MeteringSession{
     protected long time;
     protected long period;
     int[] temperatures;
+    protected int recordsPerPage;
     
 
     
     public LoggerFlashSession(HubConnection hc, Timestamp time) throws MeteringSessionException {
         super(hc);
-        long timeInt=Utils.timestamp2int(time);
-        byte[] timeBytes=Utils.long2bytes(timeInt, 4);
-        hc.sendCommand(Utils.startLoggerFlashSessionReq, timeBytes);
-        byte data[]=hc.receiveAck(Utils.startLoggerFlashRes);
-        loggerId=Utils.bytes2long(data, 4);
-        packetSize=(data[3]+1)*128;
+        byte[] ret;
+
+        
+        try{close();} 
+        catch(MeteringSessionException e){}
+        
+        hc.sendCommand(Utils.getIdLoggerFlashSessionReq);
+        ret=hc.receiveAck(Utils.getIdLoggerFlashSessionRes);
+        int logId=(int)Utils.bytes2long(ret, 4);
+        lgr.debug("getIdLoggerFlashSessionRes="+Integer.toString(logId));
+
+        hc.sendCommand(Utils.readPeriodRecodTimeFlashSessionReq);
+        ret=hc.receiveAck(Utils.readPeriodRecodTimeFlashSessionRes);
+        int periodSeconds=(int)Utils.bytes2long(ret, 2);
+        lgr.debug("periodSeconds="+Integer.toString(periodSeconds));
+        
+        hc.sendCommand(Utils.readFirstRecodTimeFlashSessionReq);
+        ret=hc.receiveAck(Utils.readFirstRecodTimeFlashSessionRes);        
+        int startTime=(int)Utils.bytes2long(ret, 4);
+        lgr.debug("startTime="+Integer.toString(startTime));
+        
+        hc.sendCommand(Utils.readLastRecodTimeFlashSessionReq);
+        ret=hc.receiveAck(Utils.readLastRecodTimeFlashSessionRes);        
+        int endTime=(int)Utils.bytes2long(ret, 4);
+        lgr.debug("endTime="+Integer.toString(endTime));
+        
+        hc.sendCommand(Utils.countRecordsPerPageLoggerFlashSessionReq);
+        ret=hc.receiveAck(Utils.countRecordsPerPageLoggerFlashSessionReq);        
+        recordsPerPage=(int)Utils.bytes2long(ret, 1);
+        lgr.debug("recordsPerPage="+Integer.toString(recordsPerPage));
+        
+        int pages=(endTime-startTime)/periodSeconds/recordsPerPage+1;
+        int startPage=0;
+               
+        byte[] pageBytes=Utils.long2bytes(startPage, 2);
+        
+        hc.sendCommand(Utils.startLoggerFlashSessionReq, pageBytes);
+        ret=hc.receiveAck(Utils.startLoggerFlashRes);                
+        loggerId=Utils.bytes2long(ret, 4);
+        packetSize=((int)Utils.bytes2long(ret, 4, 1)+1)*128; //wycięte CRC
+        lgr.debug("packetSize="+Integer.toString(packetSize));
         ComResp.setResSize(Utils.getNextLoggerFlashSessionReq, packetSize);
-        temperatures=new int[packetSize/12];
+        
+        temperatures=new int[recordsPerPage];  
+        
+        
     }
         
     public int getDataRecordingPeriod(){
@@ -45,7 +88,7 @@ public class LoggerFlashSession  extends MeteringSession{
     }
     
 
-
+ 
     @Override
     public void close() throws MeteringSessionException {
         hc.sendCommand(Utils.closeLoggerFlashSessionReq);
@@ -56,48 +99,43 @@ public class LoggerFlashSession  extends MeteringSession{
     public DataPacket getNextPacket() throws MeteringSessionException {
         DataPacket dp=null;
         if (resultReaded)
-            throw new MeteringSessionException("All data already readed in flash hub session");
-        if(packets==null){
-            hc.sendCommand(Utils.getNextLoggerFlashSessionReq);
-            ComResp rs = hc.crd.getNextResp();
-            int errCode = rs.receiveAckWithErrCode(Utils.getNextLoggerFlashSessionRes);
-            if (errCode==0xF){
-                resultReaded=true;
-                return null;                
-            }
-            else if(errCode!=0){
-                throw new MeteringSessionException("Exception number:"+errCode+" for request:"+Utils.getNextLoggerFlashSessionRes); 
-            }
-            packets = rs.receiveData();
-            bytesCounter=0;
-            time=Utils.bytes2long(packets, 4);
-            bytesCounter+=4;
-            period=Utils.bytes2long(packets, bytesCounter, 2);
-            bytesCounter+=2;
-            bitCounter=bytesCounter*8;
+            throw new MeteringSessionException("All data already readed in logger flash session");
+        hc.sendCommand(Utils.getNextLoggerFlashSessionReq);
+
+        ComResp rss[]=new ComResp[1]; // = hc.crd.getNextResp();
+        int errCode =  hc.receiveAckWithErrCodeAndSetCR(Utils.getNextLoggerFlashSessionRes, rss);
+        ComResp rs = rss[0];
+//            int errCode = rs.receiveAckWithErrCode(Utils.getNextLoggerFlashSessionRes);
+        if (errCode==0xF){  //przeczytano wyszyskie dane
+            resultReaded=true;
+            return null;                
         }
+        else if(errCode!=0){
+            throw new MeteringSessionException("Exception number:"+errCode+" for request:"+Utils.getNextLoggerFlashSessionRes); 
+        }
+        packets = rs.receiveData();
+        bytesCounter=0;
+        time=Utils.bytes2long(packets, 4);
+        bytesCounter+=4;
+        period=Utils.bytes2long(packets, bytesCounter, 2);
+        bytesCounter+=2;
+        bitCounter=bytesCounter*8;
+
         dp=new DataPacket(loggerId, time, period);
         int temp;
         int tempCount=0;
-        while (bitCounter<packetSize*8){
-            temp=getWord(bitCounter, 12); //wyliczyć temp
-            bitCounter+=12;
-            if (temp==2010){ //koniec strony
-                packets=null;
-                break;
-            } else if (temp==2020){
-                if(bitCounter+24<packetSize*8){
-                    period=getWord(bitCounter, 16);
-                    bitCounter+=24;
-                }else{                   //koniec strony
-                    packets=null;
-                }                    
+        
+        for (int i=0; i<recordsPerPage; i++){
+            temp=getWord(bitCounter, 8); //czy wypelnione 255
+            if (temp==255){
                 break;
             }
+            temp=getWord(bitCounter, 12); //wyliczyć temp
+            bitCounter+=12;
             if ((temp&0x0800)==0x0800)  //if sign bit in 12bits number is set
                 temp=temp |0xFFFFF800;
             temperatures[tempCount]=temp;                        
-            tempCount++;            
+            tempCount++; 
         }
         if (tempCount==0)
             return null;

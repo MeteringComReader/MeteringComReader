@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Map;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
@@ -15,6 +16,8 @@ import java.util.Map;
  */
 public class TestFlashSession {
         public static void main(String args[]) throws MeteringSessionException, InterruptedException{
+            PropertyConfigurator.configure(TestFlashSession.class.getResource("log4j.properties"));
+     
             Hubs hubs = HubSessionManager.discoverHubs();
             Hub hub=null;
             
@@ -27,16 +30,25 @@ public class TestFlashSession {
             else{
                 throw new MeteringSessionException("nie znaleziono żadnego huba");
             }
-            HubConnection.createHubConnection(hub);
             HubConnection hc=HubConnection.createHubConnection(hub);
+            /*
             HubFlashSession hubSession = hc.createHubFlashSession(new Timestamp(0));
             DataPacket packet;
-            
-           while ((packet = hubSession.getNextPacket())!=null){
-               ;
-           }
-           
+            while ((packet = hubSession.getNextPacket())!=null){
+            ;
+            }
             hubSession.close();
+             */
+            LoggerFlashSession loggerFlashSession = hc.createLoggerFlashSession(new Timestamp(0));
+            DataPacket packet;
+            
+                    
+/*           
+           while ((packet = loggerFlashSession.getNextPacket())!=null){
+                System.out.println(packet);
+           }
+  */        
+            
             hc.close();
             
             

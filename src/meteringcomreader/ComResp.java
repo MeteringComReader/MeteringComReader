@@ -108,6 +108,14 @@ static{
     resSizes.put(Utils.enableLoggerRadioAck, 0);  //set enable logger radio ack
     resSizes.put(Utils.getNextHubFlashSessionRes, 0); //set by HubFlasSession class
     resSizes.put(Utils.getNextLoggerFlashSessionRes, 0); //set by LoggerFlasSession class
+
+    
+    resSizes.put(Utils.getIdLoggerFlashSessionRes, 4);
+    resSizes.put(Utils.readPeriodRecodTimeFlashSessionRes, 2);
+    resSizes.put(Utils.readFirstRecodTimeFlashSessionRes, 4);
+    resSizes.put(Utils.readLastRecodTimeFlashSessionRes, 4);
+    resSizes.put(Utils.countRecordsPerPageLoggerFlashSessionRes,1);
+
 }
 
     /**

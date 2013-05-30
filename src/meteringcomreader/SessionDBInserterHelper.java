@@ -3,6 +3,7 @@ package meteringcomreader;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.Map;
+import meteringcomreader.callback.DBChangeNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -45,37 +46,10 @@ abstract public class SessionDBInserterHelper {
      * @param hubs kontener rejestrowanych koncentratorów. 
      * @throws MeteringSessionException zgłaszany w przypadku błędu operacji na bazie danych
      */
-    static public void registerHubs(Hubs hubs) throws MeteringSessionException{
-       Connection conn = null;
-        try{
-            conn = DBUtils.createDBConnection();
-            registerHubPS=conn.prepareCall(registerHubSQL);
-            
-            for (Map.Entry<String, Hub> pairs : hubs.entrySet()){
-                Hub hub = pairs.getValue();
-                String hubid=hub.getHubHexId();
-                registerHubPS.setString(1, hubid);
-                registerHubPS.setString(2, hub.getComPortName());
-                registerHubPS.setString(3, "connected");
-                registerHubPS.execute();
-            }
-
-
-            conn.commit();
-            registerHubPS.close();
-            registerHubPS=null;
-            
-        }
-        catch (SQLException ex) {
-                throw new MeteringSessionException(ex);  
-        }
-        finally{
-            try {
-                if(conn!=null)
-                    conn.close();
-            } catch (SQLException ex) {
-                lgr.warn(null, ex);
-            }
+    static public void registerHubs(Hubs hubs) throws MeteringSessionException{            
+        for (Map.Entry<String, Hub> pairs : hubs.entrySet()){
+            Hub hub = pairs.getValue();
+            registerHub(hub);
         }
     }
       
@@ -89,6 +63,7 @@ abstract public class SessionDBInserterHelper {
        Connection conn = null;
         try{
             conn = DBUtils.createDBConnection();
+            DBChangeNotification.registerForCallback(hub, conn);
             registerHubPS=conn.prepareCall(registerHubSQL);
             String hubid=hub.getHubHexId();
             registerHubPS.setString(1, hubid);
@@ -118,53 +93,14 @@ abstract public class SessionDBInserterHelper {
         }
     }
             
-   /**
-    * Wyrejestrowuje z bazy danych wszystkie koncentratory.
-    * @throws MeteringSessionException 
-    */
-    static public void unregisterAllHubs()throws MeteringSessionException{
-          Connection conn = null;
-         try{
-            conn = DBUtils.createDBConnection();
-            if(conn!=null){
-                unregisterAllHubsPS=conn.prepareCall(unregisterAllHubsSQL);
-                unregisterAllHubsPS.setString(1, "disconnected");
-                unregisterAllHubsPS.execute();
-                conn.commit();
-                unregisterAllHubsPS.close();
-                unregisterAllHubsPS=null;
-            }
-         }
-        catch (SQLException ex) {
-             throw new MeteringSessionException(ex);
-         }
-         finally{
-            try {
-                if(conn!=null)
-                    conn.close();
-            } catch (SQLException ex) {
-                lgr.warn(null, ex);
-            }
-        }
-    }
+    
     /**
-     * Wyrejestrowuje z bazy danych <code>hub</code> koncentrator hub.
-     * @param hub wyrejestrowywany koncentrator
+     * Wyrejestrowuje z bazy danych dany koncentrator <code>hub</code>.
+     * @param hubid wyrejestrowywany koncentrator.
      * @throws MeteringSessionException  zgłaszany w przypadku błędu operacji na bazie danych
      */
     static public void unregisterHub(Hub hub)throws MeteringSessionException{
-            String hubid=hub.getHubHexId();
-            unregisterHub(hubid);
-    }    
-    
-    
-    
-    /**
-     * Wyrejestrowuje z bazy danych koncentrator o heksadecymalnym identyfikatorze <code>hubid</code>.
-     * @param hubid heksadecymalny identyfikator wyrejestrowywanego koncentratora.
-     * @throws MeteringSessionException  zgłaszany w przypadku błędu operacji na bazie danych
-     */
-    static public void unregisterHub(String hubid)throws MeteringSessionException{
+         String hubid=hub.getHubHexId();
          Connection conn = null;
          try{
             conn = DBUtils.createDBConnection();
@@ -176,6 +112,7 @@ abstract public class SessionDBInserterHelper {
             conn.commit();
             unregisterHubPS.close();
             unregisterHubPS=null;
+            DBChangeNotification.unregisterForCallback(hub, conn);
          }
         catch (SQLException ex) {
              throw new MeteringSessionException(ex);

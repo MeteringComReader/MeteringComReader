@@ -69,7 +69,7 @@ abstract public class SessionDBInserter {
         return ret;        
     }
 
-     abstract protected void upsertLoggerStatus(DataPacket dp) throws MeteringSessionException;
+    abstract protected void upsertLoggerStatus(DataPacket dp) throws MeteringSessionException;
 
     protected void updateLoggerStatus(DataPacket dp) throws MeteringSessionException {
         try{
@@ -97,8 +97,10 @@ abstract public class SessionDBInserter {
             if (insertMeasurmentPS==null)
                 insertMeasurmentPS = conn.prepareStatement(insertMeasurmentSQL);
             upsertLoggerStatus(dp);
-            if (!getLoggerId(dp))
-               return;
+            if (!getLoggerId(dp)){
+                conn.commit();
+                return;
+            }
 /*            
             ResultSet timzoners = conn.createStatement().executeQuery("select sessiontimezone from dual");
             timzoners.next();

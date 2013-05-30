@@ -42,7 +42,7 @@ public class DBUtils {
      * @throws MeteringSessionException w przypadku nieznalezienia klasy drivera JDBC
      * lub zgłoszenia SQLException
      */
-    static Connection createDBConnection() throws MeteringSessionException{
+    public static Connection createDBConnection() throws MeteringSessionException{
         Connection conn=null;
         try {
             Class.forName("oracle.jdbc.OracleDriver");

@@ -81,7 +81,7 @@ public class DataPacket {
 //      encAlg = (short)infbFrame.getHeaderElement(Frame.frameINFB, "ENCF");
         encAlg=0;
 //        measurmentPeriod = frame.getHeaderElement(Frame.frameTempLoggerData, "PERIOD"); //TODO: pobrać okres
-        measurmentPeriod = 60;
+        measurmentPeriod = 180;
         rssi=((int)((byte)frame.getHeaderElement(Frame.frameTempLogger, "RSSI")))/2-74;
         lqi=frame.getHeaderElement(Frame.frameTempLogger, "LQI")&0x7F; //ignore b7
         if (encAlg!=0){
@@ -139,7 +139,7 @@ public class DataPacket {
        this.temperatures= new int [tempCount];
        this.tempCount=tempCount;
        for (int i=0; i<tempCount; i++){
-           this.temperatures[i]=temperatures[tempCount-i];
+           this.temperatures[i]=temperatures[i];
        }
        this.endTime=this.endTime+(tempCount-1)*this.measurmentPeriod;
        this.measurmentTimeEnd= Utils.time2Timestamp(endTime);

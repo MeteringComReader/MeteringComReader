@@ -595,7 +595,7 @@ public class HubConnection implements Runnable{
         byte[] ret = null;
         try{
             ComResp rs = crd.getNextResp();
-            rs.receiveAck(ack);
+            //rs.receiveAck(ack); //TODO:P sprawdzić testowanie
             ret = rs.receiveData();
         }
         finally{
@@ -729,7 +729,7 @@ public class HubConnection implements Runnable{
      catch (MeteringSessionException ex){
                lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+ex);         
                heartBeatThread=null;
-               HubSessionManager.closeHubSession(hub.getHubHexId());
+               HubSessionManager.closeHubSession(hub);
      }
      finally{
         lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" stopped.");            
@@ -777,7 +777,7 @@ public class HubConnection implements Runnable{
      * @throws MeteringSessionException zgłaszany w przypadku błędu komunikacji
      * z koncentratorem
      */
-    public MeteringSession createLoggerFlashSession(Timestamp start) throws MeteringSessionException {
+    public LoggerFlashSession createLoggerFlashSession(Timestamp start) throws MeteringSessionException {
         loggerFlashSession = new LoggerFlashSession(this, start);
         return loggerFlashSession;    
     }
@@ -821,5 +821,20 @@ public class HubConnection implements Runnable{
             throw new MeteringSessionException("Incorrect logger identification number");
         sendCommand(Utils.enableLoggerRadioReq);
         receiveAck(Utils.enableLoggerRadioAck);           
+    }
+
+    synchronized int receiveAckWithErrCodeAndSetCR(int ack, ComResp[] rs) throws MeteringSessionException {
+
+        int errCode;
+        try{
+            rs[0] = crd.getNextResp();
+            errCode = rs[0].receiveAckWithErrCode(ack);
+        }
+        finally{
+            canSendCommand=true;
+            notifyAll();
+        }
+        
+        return errCode;
     }
 }

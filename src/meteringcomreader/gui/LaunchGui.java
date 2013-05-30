@@ -9,7 +9,6 @@ package meteringcomreader.gui;
  * @author Juliusz Jezierski
  */
 
-import com.omniscient.log4jcontrib.swingappender.ui.SwingAppenderUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;

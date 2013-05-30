@@ -30,7 +30,7 @@ public class HubSessionManager implements Runnable {
     static protected Hubs discoveredHubs;
     static protected HubsSessions hubsSessions = new HubsSessions(10);
     
-    static HubSessionManager hbs=null;
+    static protected HubSessionManager hbs=null;
     
     protected boolean runHubSessionManager=true;
     protected Thread hubSessionManagerThread=null;
@@ -68,7 +68,13 @@ public class HubSessionManager implements Runnable {
             }
             closeAllConnections();
             closeAllInserters();
-            SessionDBInserterHelper.unregisterAllHubs();
+            Set<Map.Entry<String, Hub>> hubsSet= discoveredHubs.entrySet();
+            Iterator<Entry<String, Hub>> it = hubsSet.iterator();
+            while(it.hasNext()){
+                Entry<String, Hub> pair= it.next();
+                Hub hub= pair.getValue();
+                SessionDBInserterHelper.unregisterHub(hub);
+            }            
             hbs=null;
         }
     }
@@ -88,8 +94,9 @@ public class HubSessionManager implements Runnable {
         return hc;
     }
     
-    static public void closeHubSession(String hubNo){
+    static public void closeHubSession(Hub hub){
         try {
+            String hubNo = hub.getHubHexId();
             RadioSessionDBInserter inserter = radioInserters.getInserter(hubNo);
             if (inserter!=null)
                 inserter.close();
@@ -98,7 +105,7 @@ public class HubSessionManager implements Runnable {
             if (hc!=null)
                 hc.close();
             getHubsSessions().remove(hubNo);
-            SessionDBInserterHelper.unregisterHub(hubNo);
+            SessionDBInserterHelper.unregisterHub(hub);
         } catch (MeteringSessionException ex) {
             //ignore it
         }
@@ -140,7 +147,7 @@ public class HubSessionManager implements Runnable {
 lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessions().isEmpty());
     }
 
-    static void closeAllInserters() {
+    private static void closeAllInserters() {
         Set<Map.Entry<String, RadioSessionDBInserter>> insertersSet= radioInserters.entrySet();
         Iterator<Map.Entry<String, RadioSessionDBInserter>> it = insertersSet.iterator();
         while(it.hasNext()){

@@ -118,6 +118,7 @@ lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
                     }
                 else {
                     size=ComResp.getResDataSize(res);
+                    lgr.debug("Size for:0x"+Integer.toHexString(res)+ " : "+Integer.toString(size) );
                     if((size&0x0FFF)==0x0FFF){ //next byte detemines data size
                         len=((int)Utils.bytes2long(_receiveData(1), 1))
                                 *(1+size>>>12); // older 4 bits = len multiplier

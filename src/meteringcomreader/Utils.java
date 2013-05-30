@@ -69,8 +69,8 @@ public class Utils {
      * Maksymalny czas oczekiwania na zakończenie operacji odczytu
      * ze strumienia danych równy wyrażony w milisekundach.
      */
-    public static final int TIMEOUT=100;
-//    public static final int TIMEOUT=2000;
+//    public static final int TIMEOUT=100;
+    public static final int TIMEOUT=500; //TODO zmniejszyć
 
 
     static final int intervalHubFlashMemMode=1;
@@ -95,10 +95,24 @@ public class Utils {
     
     final static int startLoggerFlashRes=0x0102;
     static final int startLoggerFlashSessionReq=0x0102;
+    static final int readFirstRecodTimeFlashSessionReq=0x020C;
+    static final int readFirstRecodTimeFlashSessionRes=0x020C;
+    static final int readLastRecodTimeFlashSessionReq=0x020C;
+    static final int readLastRecodTimeFlashSessionRes=0x030C;
+    static final int readPeriodRecodTimeFlashSessionReq=0x000C;
+    static final int readPeriodRecodTimeFlashSessionRes=0x000C;
+    static final int stopLoggerFlashSessionReq=0xF102;
+    static final int stopLoggerFlashSessionRes=0xF102;
+    static final int countRecordsPerPageLoggerFlashSessionReq=0x040C;
+    static final int countRecordsPerPageLoggerFlashSessionRes=0x040C;
+    static final int getIdLoggerFlashSessionReq=0x000d;
+    static final int getIdLoggerFlashSessionRes=0x000d;
+    
 
+    
     final static int closeAllSessionRes=0xFF02;
+    final static int closeLoggerFlashSessionReq=0xF102;
     final static int closeLoggerFlashSessionRes=0x0902;
-    final static int closeLoggerFlashSessionReq=0x0902;
     final static int getloggersRes=0x0006;
     final static int getChargeHubBatteryLevelRes=0x0007;
     final static int getHubTimeReq=0x0107;
