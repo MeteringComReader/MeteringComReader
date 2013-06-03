@@ -4,7 +4,10 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
+import meteringcomreader.exceptions.MeteringSessionOperationAlreadyInProgressException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +17,9 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggerFlashSession  extends MeteringSession{
     private static final Logger lgr = LoggerFactory.getLogger(LoggerFlashSession.class);
+    static boolean skipLastPage = false;
+    protected int pageCount;
+    protected int pageCounter=0;
 
     protected final long loggerId;
     
@@ -37,11 +43,26 @@ public class LoggerFlashSession  extends MeteringSession{
         try{close();} 
         catch(MeteringSessionException e){}
         
-        hc.sendCommand(Utils.getIdLoggerFlashSessionReq);
-        ret=hc.receiveAck(Utils.getIdLoggerFlashSessionRes);
-        int logId=(int)Utils.bytes2long(ret, 4);
-        lgr.debug("getIdLoggerFlashSessionRes="+Integer.toString(logId));
+        try{
+            hc.sendCommand(Utils.getIdLoggerFlashSessionReq);
+            ret=hc.receiveAck(Utils.getIdLoggerFlashSessionRes);
+            int logId=(int)Utils.bytes2long(ret, 4);
+            lgr.debug("getIdLoggerFlashSessionRes="+Integer.toHexString(logId));
+        }
+        catch(MeteringSessionTimeoutException e){
+            throw e; //TODO obsłużyć zaśnięcie logera oddzielnym wyjątkiem
+        }
+/*        
+        hc.sendCommand(Utils.getLoggerHardwareVerReq);
+        ret=hc.receiveAck(Utils.getLoggerHardwareVerRes);
+        int logHardVer=(int)Utils.bytes2long(ret, 2);
+        lgr.debug("getLoggerHardwareVerRes="+Integer.toHexString(logHardVer));        
 
+        hc.sendCommand(Utils.getLoggerFirmwareVerReq);
+        ret=hc.receiveAck(Utils.getLoggerFirmwareVerRes);
+        int logFirmVer=(int)Utils.bytes2long(ret, 2);
+        lgr.debug("getLoggerHardwareVerRes="+Integer.toHexString(logFirmVer));        
+*/
         hc.sendCommand(Utils.readPeriodRecodTimeFlashSessionReq);
         ret=hc.receiveAck(Utils.readPeriodRecodTimeFlashSessionRes);
         int periodSeconds=(int)Utils.bytes2long(ret, 2);
@@ -62,8 +83,9 @@ public class LoggerFlashSession  extends MeteringSession{
         recordsPerPage=(int)Utils.bytes2long(ret, 1);
         lgr.debug("recordsPerPage="+Integer.toString(recordsPerPage));
         
-        int pages=(endTime-startTime)/periodSeconds/recordsPerPage+1;
+        pageCount=(endTime-startTime)/periodSeconds/recordsPerPage+1;
         int startPage=0;
+        lgr.debug("pageCount="+Integer.toString(pageCount));
                
         byte[] pageBytes=Utils.long2bytes(startPage, 2);
         
@@ -72,7 +94,9 @@ public class LoggerFlashSession  extends MeteringSession{
         loggerId=Utils.bytes2long(ret, 4);
         packetSize=((int)Utils.bytes2long(ret, 4, 1)+1)*128; //wycięte CRC
         lgr.debug("packetSize="+Integer.toString(packetSize));
-        ComResp.setResSize(Utils.getNextLoggerFlashSessionReq, packetSize);
+        ComResp.setResSize(Utils.getNextLoggerFlashSessionRes, packetSize);
+        ComResp.setResSize(Utils.regetPrevLoggerFlashSessionRes, packetSize);
+        
         
         temperatures=new int[recordsPerPage];  
         
@@ -91,19 +115,46 @@ public class LoggerFlashSession  extends MeteringSession{
  
     @Override
     public void close() throws MeteringSessionException {
-        hc.sendCommand(Utils.closeLoggerFlashSessionReq);
-        hc.receiveAck(Utils.closeLoggerFlashSessionRes);    
+        try{
+            hc.sendCommand(Utils.closeLoggerFlashSessionReq);
+            hc.receiveAck(Utils.closeLoggerFlashSessionRes);    
+           }catch (MeteringSessionOperationAlreadyInProgressException e){
+               ; // TODO: obsługa buga Darka
+           }        
+
     }
 
     @Override
     public DataPacket getNextPacket() throws MeteringSessionException {
+        return getPacket(Utils.getNextLoggerFlashSessionReq, Utils.getNextLoggerFlashSessionRes);
+    }
+
+    @Override
+    public DataPacket regetPrevPacket() throws MeteringSessionException{
+        hc.sendCommand(Utils.getIdLoggerFlashSessionReq);
+        byte[] ret=hc.receiveAck(Utils.getIdLoggerFlashSessionRes);
+        int logId=(int)Utils.bytes2long(ret, 4);
+        lgr.debug("getIdLoggerFlashSessionRes="+Integer.toString(logId));
+        return getPacket(Utils.regetPrevLoggerFlashSessionReq, Utils.regetPrevLoggerFlashSessionRes);
+    }
+    
+        
+    protected DataPacket getPacket(int requestCommand, int responseCommand) throws MeteringSessionException{
+        /* TODO: start: latka z pomijaniem ostatniej strony */
+        lgr.debug("pageCounter="+Integer.toString(pageCounter));
+        lgr.debug("pageCount="+Integer.toString(pageCount));
+        if (pageCounter==pageCount)
+            return null;
+        pageCounter++;
+        /* TODO: end: latka z pomijaniem ostatniej strony */
+        
         DataPacket dp=null;
         if (resultReaded)
             throw new MeteringSessionException("All data already readed in logger flash session");
-        hc.sendCommand(Utils.getNextLoggerFlashSessionReq);
+        hc.sendCommand(requestCommand);
 
         ComResp rss[]=new ComResp[1]; // = hc.crd.getNextResp();
-        int errCode =  hc.receiveAckWithErrCodeAndSetCR(Utils.getNextLoggerFlashSessionRes, rss);
+        int errCode =  hc.receiveAckWithErrCodeAndSetCR(responseCommand, rss);
         ComResp rs = rss[0];
 //            int errCode = rs.receiveAckWithErrCode(Utils.getNextLoggerFlashSessionRes);
         if (errCode==0xF){  //przeczytano wyszyskie dane
@@ -111,7 +162,10 @@ public class LoggerFlashSession  extends MeteringSession{
             return null;                
         }
         else if(errCode!=0){
-            throw new MeteringSessionException("Exception number:"+errCode+" for request:"+Utils.getNextLoggerFlashSessionRes); 
+            if (errCode==4)                
+                throw new MeteringSessionTimeoutException("LoggerFlashSessionTimeout");
+            else
+                throw new MeteringSessionException("Exception number:"+errCode+" for request: 0x"+Integer.toHexString(Utils.getNextLoggerFlashSessionRes)); 
         }
         packets = rs.receiveData();
         bytesCounter=0;
@@ -144,10 +198,6 @@ public class LoggerFlashSession  extends MeteringSession{
         return dp;
     }
 
-    @Override
-    public DataPacket regetPrevPacket() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
     
     public int getWord(int bitPos, int bits){
         int bitNo=8-(bitPos%8); //ile zostało
@@ -166,4 +216,6 @@ public class LoggerFlashSession  extends MeteringSession{
         }
        return res;
     }
+
+
 }
