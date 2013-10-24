@@ -117,7 +117,7 @@ static{
     resSizes.put(Utils.isHubPoweredAfterSessionRes, 1); //is hub powered after session res
     resSizes.put(Utils.setHubPoweredAfterSessionFalseRes, 0); //unset powered hub after session res
     resSizes.put(Utils.setHubPoweredAfterSessionTrueRes, 0); //set powered hub after session res
-    resSizes.put(Utils.radioSessionRes, DataPacket.LEN); //receive next data packet in radio session
+//nie potrzebne?    resSizes.put(Utils.radioSessionRes, DataPacket.LEN); //receive next data packet in radio session
 //    resSizes.put(0x010A, ???); //receive next data packet in logger flash session
     //jeżeli bład to zero
 //    resSizes.put(0x020A, ???); //receive next data packet in hub flash session

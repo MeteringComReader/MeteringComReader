@@ -103,11 +103,13 @@ public class HubFlashSession extends MeteringSession{
                 }
                 int frameSize=packets[bytesCounter];
                 bytesCounter++;
-                if (frameSize==DataPacket.LEN){
-                    dp=new DataPacket(packets, bytesCounter);
+//throw new  RuntimeException("nie zaimplementowno zmiennej długosci ramki");
+//                if (frameSize==DataPacket.LEN){
+                    dp=new DataPacket(packets, frameSize, bytesCounter);
 //                    packetsCounter++;
-                }
+//                }
                 bytesCounter+=frameSize;
+                
             }
         }
         return dp;

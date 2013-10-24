@@ -113,7 +113,7 @@ abstract public class SessionDBInserter {
                 dp.loggerId,
                 dp.measurmentTimeStart,
                 dp.measurmentTimeEnd);
-            for (int i = 0; i < dp.temperatures.length; i++) {
+            for (int i = 0; i < dp.tempCount; i++) {
                 Timestamp time = new Timestamp((Utils.timeStartPoint
                         + dp.endTime - i * dp.measurmentPeriod) * 1000);
                 if (!hs.contains(time)) {

@@ -55,16 +55,20 @@ public class HubFlashSessionWithPacketNo extends MeteringSession{
                 bytesCounter=0;
                 packetsCounter=0;        
             }
+            
             while(dp==null && packets!=null){
                 int packetSize=packets[bytesCounter];
                 bytesCounter++;
-                if (packetSize==DataPacket.LEN){
-                    dp=new DataPacket(packets, bytesCounter);
-                }
+//throw new  RuntimeException("nie zaimplementowno zmiennej długosci ramki");
+               
+//                if (packetSize==DataPacket.LEN){
+                    dp=new DataPacket(packets, packetSize, bytesCounter);
+//                }
                 bytesCounter+=packetSize;
                 packetsCounter++;
                 if ((packetsCounter)==packetsNo)
                     packets=null;
+                
             }
         }
         return dp;

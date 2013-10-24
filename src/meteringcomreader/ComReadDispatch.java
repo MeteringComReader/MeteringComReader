@@ -105,17 +105,19 @@ lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
                     try {
                         data =_receiveData(1);
                         frameSize = 0xFF & data[0];
-                        if (frameSize==DataPacket.LEN){                           
-                            data = _receiveData(DataPacket.LEN);
+//                        if (frameSize==DataPacket.LEN){                      
+                            data = _receiveData(frameSize); //ramki o zmiennej długości
                             lgr.debug("Time:"+System.nanoTime()+", received new DP ");                            
-                            DataPacket dp = new DataPacket(data);                            
+                            DataPacket dp = new DataPacket(data, frameSize);                            
                             rsData.add(dp);
                             lgr.debug("Time:"+System.nanoTime()+", new DP inserted into queue");                            
-                        }
+/*
+                    }
                         else{
                             data =_receiveData(frameSize); //unknown frame format
                             lgr.debug("Time:"+System.nanoTime()+", unknown frame format, len:"+frameSize);                          
                         }
+*/                
                     } catch (MeteringSessionTimeoutException ex) {
                         return;  //if timeout to get next data then exit
                     } catch (MeteringSessionException ex) {
