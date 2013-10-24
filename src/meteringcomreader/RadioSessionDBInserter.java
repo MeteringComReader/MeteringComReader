@@ -4,6 +4,7 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -41,9 +42,10 @@ public class RadioSessionDBInserter extends SessionDBInserter implements Runnabl
      }
 
     @Override
-    public void mainThread() throws MeteringSessionException {
+    public int mainThread() throws MeteringSessionException {
         setThread(new Thread(this, "radioSessionDBInserter for hub: "+hc.hub.getHubHexId()));
         getThread().start();
+        return 0;
     }
 
     

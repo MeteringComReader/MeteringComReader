@@ -4,6 +4,7 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.SerialPortEvent;
 import java.sql.Timestamp;
 import org.slf4j.Logger;

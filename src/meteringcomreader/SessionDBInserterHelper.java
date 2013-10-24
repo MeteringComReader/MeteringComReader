@@ -1,8 +1,10 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import meteringcomreader.callback.DBChangeNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +75,11 @@ abstract public class SessionDBInserterHelper {
             conn.commit();
             registerHubPS.close();
             registerHubPS=null;
+            boolean reverseConnStatus = DBChangeNotification.testReverseConnection(hub, conn);
+            if (!reverseConnStatus)
+                lgr.warn("Reverse connection NOT established");
+            else
+                lgr.debug("Reverse connection established");
         }
         catch (SQLException ex) {
             int errCode=ex.getErrorCode();
@@ -113,6 +120,7 @@ abstract public class SessionDBInserterHelper {
             unregisterHubPS.close();
             unregisterHubPS=null;
             DBChangeNotification.unregisterForCallback(hub, conn);
+            lgr.debug("Hub 0x"+hubid+" unregistered.");
          }
         catch (SQLException ex) {
              throw new MeteringSessionException(ex);

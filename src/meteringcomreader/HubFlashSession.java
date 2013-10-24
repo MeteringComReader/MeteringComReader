@@ -1,6 +1,9 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
+import meteringcomreader.exceptions.MeteringSessionOperationAlreadyInProgressException;
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
 
 /**
  * Reprezentuje sesję odczytu danych z pamięci flash koncentratora.
@@ -125,9 +128,8 @@ public class HubFlashSession extends MeteringSession{
      */
     @Override
     public void close() throws MeteringSessionException {
-        hc.sendCommand(Utils.closeHubFlashSessionReq);
-        hc.receiveAck(Utils.closeHubFlashSessionRes);
-    }
-    
+            hc.sendCommand(Utils.closeHubFlashSessionReq);
+            hc.receiveAck(Utils.closeHubFlashSessionRes);
+           }        
     
 }

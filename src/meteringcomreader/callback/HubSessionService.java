@@ -6,6 +6,7 @@ package meteringcomreader.callback;
 
 
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.util.Date;
 import java.sql.Timestamp;
 import meteringcomreader.*;
@@ -35,17 +36,23 @@ public class HubSessionService {
         
     }
 
-    public static void downloadMeasurmentsFromLogger(String hubNo, Date from) throws MeteringSessionException {
-        try{
-        Timestamp time = new Timestamp(from.getTime());
-        HubSessionManager.downloadMeasurmentsFromLogger(hubNo, time);
+    public static int  downloadMeasurmentsFromLogger(String hubNo, Date from) throws MeteringSessionException {
+//        try{
+        Timestamp time;
+        if (from != null)
+            time = new Timestamp(from.getTime());
+        else
+            time=null;
+        int newMeasuments = HubSessionManager.downloadMeasurmentsFromLogger(hubNo, time);
+/*        
         HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
         LoggerFlashSessionDBInserter inserter= LoggerFlashSessionDBInserter.createLoggerFlashSessionDBInserter(hc, time);
         inserter.mainThread();
-        }catch (Throwable ex){
-            throw new MeteringSessionException(ex.getMessage());
-        }
-        
+        */
+//        }catch (Throwable ex){
+//            throw new MeteringSessionException(ex);
+//        }
+        return newMeasuments;
     }
 
 

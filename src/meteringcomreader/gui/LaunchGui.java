@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import meteringcomreader.HubSessionManager;
-import meteringcomreader.MeteringSessionException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import meteringcomreader.StdOutErrLog;
 import org.apache.log4j.PropertyConfigurator;
  
@@ -31,7 +31,7 @@ public class LaunchGui {
     
     public static void main(String[] args) {
         /* Use an appropriate Look and Feel */
-        PropertyConfigurator.configure(LaunchGui.class.getResource("log4j.properties"));
+        PropertyConfigurator.configure(LaunchGui.class.getResource("/meteringcomreader/log4j.properties"));
         StdOutErrLog.tieSystemOutAndErrToLog();
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -57,13 +57,28 @@ public class LaunchGui {
     }
      
     private static void createAndShowGUI() {
+        icon=createImage("bulb.gif", "tray icon");
+        EmptyFrame frame=new EmptyFrame();
+        frame.setIconImage(icon);
+        frame.setVisible(true);
+        DbConnectDialog dialog = new DbConnectDialog(frame, true, icon);
+        
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                    //    System.exit(0);
+                    }
+                });
+        dialog.setVisible(true);
+        frame.setVisible(false);
+        if (!frame.connected)
+            System.exit(0);
         //Check the SystemTray support
         if (!SystemTray.isSupported()) {
             lgr.debug("SystemTray is not supported");
             return;
         }
         final PopupMenu popup = new PopupMenu();
-        icon=createImage("bulb.gif", "tray icon");
         final TrayIcon trayIcon =
                 new TrayIcon(icon);
         final SystemTray tray = SystemTray.getSystemTray();
@@ -117,6 +132,10 @@ public class LaunchGui {
                 System.exit(0);
             }
         });
+
+        
+      
+//        JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
         try {
             HubSessionManager.startHubSessionManager();
         } catch (MeteringSessionException ex) {
@@ -149,6 +168,10 @@ public class LaunchGui {
        */
 
     }
+    
+    static public class EmptyFrame extends JFrame{
+        public  boolean connected=false;    
+}
     
 }
 

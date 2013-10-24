@@ -82,5 +82,5 @@ public class CRC16DN502 {
          byte[] rCRC={0x56,0x7E};
          System.out.println(( Long.toHexString(Utils.bytes2long(rCRC, 2))));
     }
- 
+
 }

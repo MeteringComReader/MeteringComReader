@@ -1,5 +1,6 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.HashMap;
@@ -23,8 +24,8 @@ abstract public class SessionDBInserter {
 
     
     protected static String checkPeriodSQL = "select MT_TIME from measurment where mt_ms_id=? and MT_TIME between ? and ?";
-    protected static String insertMeasurmentSQL = "insert into measurment (MT_ID, MT_MS_ID, MT_PA_ID, MT_TIME, MT_MECH_VALUE1, MT_BATTERY_VOLTAGE) values (?,?,?,?,?,?)";
-    protected static String getNextMeIdSQL = "select me_me_id_seq.nextval from dual";
+    protected static String insertMeasurmentSQL = "insert into measurment (MT_ID, MT_MS_ID, MT_PA_ID, MT_TIME, MT_MECH_VALUE1, MT_BATTERY_VOLTAGE) values (mt_mt_id_seq.nextval,?,?,?,?,?)";
+    protected static String getCurrMtIdSQL = "select mt_mt_id_seq.currval from dual";
     protected static String updateNewestMeasurmentSQL = "update measurer set MS_LAST_MT_ID=?, MS_BEFORE_LAST_MT_ID=MS_LAST_MT_ID where MS_ID=?";
     private String getLoggerIdSQL="select MS_ID from measurer where MS_NUMBER=? for update";
     protected static String insertConnectedLoggersSQL="insert into measurer_session (MSS_NUMBER,MSS_RSSI,MSS_HS_NUMBER,MSS_LAST_SEEN, mss_measurment_period) values (?,?,?,?,?)";
@@ -33,13 +34,13 @@ abstract public class SessionDBInserter {
     protected HubConnection hc = null;
     protected MeteringSession metSess = null;
     protected Connection conn;
-    private PreparedStatement getNextMeIdPS=null;
-    private PreparedStatement updateNewestMeasurmentPS=null;
-    private PreparedStatement insertMeasurmentPS=null;
-    private PreparedStatement getLoggerIdPS=null;
-    private PreparedStatement checkPeriodPS=null;
-    private PreparedStatement insertConnectedLoggersPS=null;
-    private PreparedStatement updateConnectedLoggersPS=null;
+    protected PreparedStatement getCurrMtIdPS=null;
+    protected PreparedStatement updateNewestMeasurmentPS=null;
+    protected PreparedStatement insertMeasurmentPS=null;
+    protected PreparedStatement getLoggerIdPS=null;
+    protected PreparedStatement checkPeriodPS=null;
+    protected PreparedStatement insertConnectedLoggersPS=null;
+    protected PreparedStatement updateConnectedLoggersPS=null;
     
     
 
@@ -89,17 +90,18 @@ abstract public class SessionDBInserter {
     }
 
 
-    protected void loadPacket(DataPacket dp) throws MeteringSessionException {
+    protected int loadPacket(DataPacket dp) throws MeteringSessionException {
         boolean newMeasurments = false;
-        long newestMeId = 0;
+        int measurmentsCount=0;
 
         try {
             if (insertMeasurmentPS==null)
                 insertMeasurmentPS = conn.prepareStatement(insertMeasurmentSQL);
             upsertLoggerStatus(dp);
-            if (!getLoggerId(dp)){
+            if (!getLoggerId(dp)){  //nie ma loggera w bazie danych
+                lgr.debug("logger 0x"+dp.getLoggerHexId()+" not registred in the database");
                 conn.commit();
-                return;
+                return 0;
             }
 /*            
             ResultSet timzoners = conn.createStatement().executeQuery("select sessiontimezone from dual");
@@ -115,16 +117,16 @@ abstract public class SessionDBInserter {
                 Timestamp time = new Timestamp((Utils.timeStartPoint
                         + dp.endTime - i * dp.measurmentPeriod) * 1000);
                 if (!hs.contains(time)) {
-                    long meId = getNextMeId();
                     if (!newMeasurments){
-                        newestMeId=meId;
                         newMeasurments = true;
                     }
-                    addToBatch(insertMeasurmentPS, dp, meId, time, dp.temperatures[i]);
+                    addToBatch(insertMeasurmentPS, dp, time, dp.temperatures[i]);
+                    measurmentsCount++;
                 }
             }
             if (newMeasurments) {               
                 insertMeasurmentPS.executeBatch();
+                long newestMeId = getCurrMtId();                
                 updateNewestMeasurment(dp, newestMeId);
             }
             conn.commit();
@@ -135,9 +137,9 @@ abstract public class SessionDBInserter {
                 lgr.warn(null, ex1);
             }
             //throw new MeteringSessionException(ex);
-lgr.debug("Time:"+System.nanoTime()+","+ex.getMessage());
+        lgr.debug("Time:"+System.nanoTime()+","+ex.getMessage());
         } 
-
+        return measurmentsCount;
     }
 
     protected HashSet<Timestamp> checkPeriod(long msId, Timestamp fromTime, Timestamp toTime) throws MeteringSessionException {
@@ -180,7 +182,7 @@ lgr.debug("Time:"+System.nanoTime()+","+ex.getMessage());
         }
     }
 
-    abstract public void mainThread() throws MeteringSessionException;
+    abstract public int  mainThread() throws MeteringSessionException;
 
 /*    
     public static void main(String[] args) throws MeteringSessionException {
@@ -202,22 +204,21 @@ lgr.debug("Time:"+System.nanoTime()+","+ex.getMessage());
     }
 */    
 //MT_ID, MT_MS_ID, MT_PA_ID, MT_TIME, MT_MECH_VALUE1, MT_BATTERY_VOLTAGE
-    private void addToBatch(PreparedStatement ps, DataPacket dp, long meId, Timestamp time, int temperature) throws SQLException {
-        ps.setLong(1, meId); //MT_ID, 
-        ps.setLong(2, dp.loggerId); //MT_MS_ID, 
-        ps.setLong(3, 0); //MT_PA_ID, //TODO: dodac obsluge paczek
-        ps.setTimestamp(4, time, Utils.UTCcalendar);        //MT_TIME, 
-        ps.setBigDecimal(5, (new BigDecimal(temperature)).divide(BigDecimal.TEN));// MT_MECH_VALUE1
-        ps.setBigDecimal(6, (new BigDecimal(dp.batteryVoltage)).divide(BigDecimal.TEN));
+    protected void addToBatch(PreparedStatement ps, DataPacket dp, Timestamp time, int temperature) throws SQLException {
+        ps.setLong(1, dp.loggerId); //MT_MS_ID, 
+        ps.setLong(2, 0); //MT_PA_ID, //TODO: dodac obsluge paczek
+        ps.setTimestamp(3, time, Utils.UTCcalendar);        //MT_TIME, 
+        ps.setBigDecimal(4, (new BigDecimal(temperature)).divide(BigDecimal.TEN));// MT_MECH_VALUE1
+        ps.setBigDecimal(5, (new BigDecimal(dp.batteryVoltage)).divide(BigDecimal.TEN));
         ps.addBatch();
 
     }
 
-    private long getNextMeId() throws SQLException {
-        if (getNextMeIdPS==null){
-            getNextMeIdPS=conn.prepareStatement(getNextMeIdSQL);
+    private long getCurrMtId() throws SQLException {
+        if (getCurrMtIdPS==null){
+            getCurrMtIdPS=conn.prepareStatement(getCurrMtIdSQL);
         }
-        ResultSet rs= getNextMeIdPS.executeQuery();
+        ResultSet rs= getCurrMtIdPS.executeQuery();
         rs.next();
         long ret = rs.getLong(1);
         rs.close();

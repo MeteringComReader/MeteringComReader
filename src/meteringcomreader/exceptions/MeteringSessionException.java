@@ -1,4 +1,4 @@
-package meteringcomreader;
+package meteringcomreader.exceptions;
 
 /**
  * Wyjątek zgłaszany w przypadku niepowodzenia wykonania operacji

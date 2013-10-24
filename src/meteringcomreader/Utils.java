@@ -1,5 +1,8 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.CommPortIdentifier;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,8 +72,8 @@ public class Utils {
      * Maksymalny czas oczekiwania na zakończenie operacji odczytu
      * ze strumienia danych równy wyrażony w milisekundach.
      */
-//    public static final int TIMEOUT=100;
-    public static final int TIMEOUT=500; //TODO zmniejszyć
+    public static final int COM_DISCOVERY_TIMEOUT=200;
+    public static final int TIMEOUT=1500; //TODO zmniejszyć
 
 
     static final int intervalHubFlashMemMode=1;
@@ -97,17 +100,23 @@ public class Utils {
     static final int startLoggerFlashSessionReq=0x0102;
     static final int readFirstRecodTimeFlashSessionReq=0x020C;
     static final int readFirstRecodTimeFlashSessionRes=0x020C;
-    static final int readLastRecodTimeFlashSessionReq=0x020C;
+    static final int readLastRecodTimeFlashSessionReq=0x030C;
     static final int readLastRecodTimeFlashSessionRes=0x030C;
     static final int readPeriodRecodTimeFlashSessionReq=0x000C;
     static final int readPeriodRecodTimeFlashSessionRes=0x000C;
     static final int stopLoggerFlashSessionReq=0xF102;
-    static final int stopLoggerFlashSessionRes=0xF102;
+    static final int stopLoggerFlashSessionRes=0x0902;
     static final int countRecordsPerPageLoggerFlashSessionReq=0x040C;
     static final int countRecordsPerPageLoggerFlashSessionRes=0x040C;
     static final int getIdLoggerFlashSessionReq=0x000d;
     static final int getIdLoggerFlashSessionRes=0x000d;
     
+    static final int getLoggerFirmwareVerReq=0x020d;
+    static final int getLoggerFirmwareVerRes=0x020d;
+
+    static final int getLoggerHardwareVerReq=0x030d;
+    static final int getLoggerHardwareVerRes=0x030d;
+
 
     
     final static int closeAllSessionRes=0xFF02;
@@ -133,6 +142,8 @@ public class Utils {
     
     static final int getNextLoggerFlashSessionReq=0x010A;
     static final int getNextLoggerFlashSessionRes=0x010A;
+    static final int regetPrevLoggerFlashSessionReq=0x010B;
+    static final int regetPrevLoggerFlashSessionRes=0x010B;
     
 /**
  * Zamienia long na tablicę bajtów według Little Endian.

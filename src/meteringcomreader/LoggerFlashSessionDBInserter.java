@@ -4,7 +4,11 @@
  */
 package meteringcomreader;
 
+import java.sql.SQLException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import static meteringcomreader.SessionDBInserter.insertMeasurmentSQL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +41,23 @@ public class LoggerFlashSessionDBInserter extends SessionDBInserter{
     }
 
     @Override
-    public void mainThread() throws MeteringSessionException {
+    public int  mainThread() throws MeteringSessionException {
         DataPacket dp;
+        int measurmentsCount=0;
+//            if (!getLoggerId(this.metSess.)){  //nie ma loggera w bazie danych
+//                conn.commit();
+//                return ;
+//            }
         try {
-            while ((dp = metSess.getNextPacket())!=null) {
-                        loadPacket(dp);
-lgr.debug("Time:"+System.nanoTime()+","+dp);
+            while ((dp = metSess.getNextPacket(3))!=null) {
+                        measurmentsCount+=loadPacket(dp);
+                        lgr.debug("Time:"+System.nanoTime()+","+dp);
                 }
+           lgr.info("Time:"+System.nanoTime()+", new measurments inserted"+measurmentsCount);                        
         } finally {
             try {close();} catch (MeteringSessionException e) {/*ignore it*/}
         }
+        return measurmentsCount;
     }
     
-}
+ }

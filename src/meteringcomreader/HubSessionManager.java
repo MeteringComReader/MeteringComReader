@@ -4,12 +4,13 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.slf4j.Logger;
@@ -31,6 +32,31 @@ public class HubSessionManager implements Runnable {
     static protected HubsSessions hubsSessions = new HubsSessions(10);
     
     static protected HubSessionManager hbs=null;
+
+
+    public static void registerTestHub(Hub hub){
+        HubConnection hc = HubConnection.createEmptyHubConnection(hub);
+        getHubsSessions().put(hub.getHubHexId(), hc);
+    }
+    
+    public static void unregisterTestHub(Hub hub){
+        getHubsSessions().remove(hub.getHubHexId());
+    }
+            
+    public static boolean isRegisteredForDCN(long regId) {
+        HubsSessions hubsSess = getHubsSessions();
+
+        Set<Map.Entry<String, HubConnection>> connectionSet= hubsSess.entrySet();
+        Iterator<Map.Entry<String, HubConnection>> it = connectionSet.iterator();
+        while(it.hasNext()){
+            Map.Entry<String, HubConnection> pair= it.next();
+            HubConnection hc= pair.getValue();
+            long registredId = hc.getHub().getDCR().getRegId();
+            if (regId==registredId)
+                return true;
+        }        
+        return false;        
+    }
     
     protected boolean runHubSessionManager=true;
     protected Thread hubSessionManagerThread=null;
@@ -116,9 +142,19 @@ public class HubSessionManager implements Runnable {
         hc.createHubFlashSession(from);
     }
 
-    static public void downloadMeasurmentsFromLogger(String hubNo, Timestamp from) throws MeteringSessionException{
+    static public int downloadMeasurmentsFromLogger(String hubNo, Timestamp from) throws MeteringSessionException{
         HubConnection hc = getHubsSessions().getHubConnection(hubNo);
-        hc.createLoggerFlashSession(from);
+        int newMeasurments = 0;
+        hc.closeRadioSession();
+        try{
+            LoggerFlashSessionDBInserter loggerFlashSessionDBInserter = LoggerFlashSessionDBInserter.createLoggerFlashSessionDBInserter(hc, from);
+            newMeasurments = loggerFlashSessionDBInserter.mainThread();                    
+        }
+        finally{
+            hc.closeLoggerFlashSession();
+            hc.createRadioSession(61); //TODO zmienić timeout
+        }
+        return newMeasurments;
     }
     /**
      * @return the discoveredHubs
@@ -170,8 +206,8 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
             
             try{
                 Hubs hubs = HubSessionManager.discoverHubs();
-                meteringcomreader.SessionDBInserterHelper.registerHubs(hubs);
                 startHubSessionAndRS(hubs);
+                meteringcomreader.SessionDBInserterHelper.registerHubs(hubs);
                 try {
                     Thread.sleep(1000*20);
                 } catch (InterruptedException ex) {
@@ -249,7 +285,13 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
         
      PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
         addShutdownHook();
+        
+        
         HubSessionManager.startHubSessionManager();
+
+//        Thread.sleep(1000*60);
+
+//        HubSessionManager.downloadMeasurmentsFromLogger("4D4503000000", null);
         
         Thread.sleep(1000*60*300);
         

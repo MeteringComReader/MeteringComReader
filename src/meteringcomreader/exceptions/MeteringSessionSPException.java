@@ -1,4 +1,6 @@
-package meteringcomreader;
+package meteringcomreader.exceptions;
+
+import meteringcomreader.exceptions.MeteringSessionException;
 
 /**
  * Wyjątek zgłaszany w przypadku niepowodzenia wykonania operacji
@@ -6,7 +8,8 @@ package meteringcomreader;
  * z połączenia z koncentratorem (SP - serial port).
  * @author Juliusz Jezierski
  */
-class MeteringSessionSPException extends MeteringSessionException{
+public class MeteringSessionSPException extends MeteringSessionException{
+    
 
     public MeteringSessionSPException(Throwable ex) {
         super(ex);

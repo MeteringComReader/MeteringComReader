@@ -4,6 +4,7 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import meteringdatareader.Frame;
@@ -18,6 +19,7 @@ public class DataPacket {
     static final int defTempCount=6;
      int appId;
      short fieldLength;
+
      long loggerNo;  //Logger identificator
      short encAlg;
      Timestamp measurmentTimeStart;
@@ -121,7 +123,7 @@ public class DataPacket {
         sb.append(", measurmentTime:");sb.append(measurmentTimeStart);
         sb.append(", measurmentPeriod:");sb.append(measurmentPeriod);
         sb.append(", temperatures:(");
-        for (int i=0; i<6; i++){
+        for (int i=0; i<temperatures.length; i++){
             sb.append(temperatures[i]);
             sb.append(" ,");
         }       
@@ -144,11 +146,12 @@ public class DataPacket {
        this.endTime=this.endTime+(tempCount-1)*this.measurmentPeriod;
        this.measurmentTimeEnd= Utils.time2Timestamp(endTime);
     }
-    
-    public static void main(String[] args){
-        int i = 0xFF;
-        byte b =(byte)i;
-        System.out.println((int)(byte)i);
-        System.out.println(i);
+
+    public long getLoggerNo() {
+        return loggerNo;
     }
+
+    public void setLoggerNo(long loggerNo) {
+        this.loggerNo = loggerNo;
+    }    
 }

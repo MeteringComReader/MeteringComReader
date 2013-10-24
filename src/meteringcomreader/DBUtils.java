@@ -1,5 +1,6 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,9 +23,22 @@ public class DBUtils {
      * Tekst polecenia ustawiającego strefę czasową polecenia na UTC.
      */
     protected static String setTimezoneToUTC="alter session set time_zone='00:00'";
+
     /**
      * Opis połączenia do bazy danych.
      */
+    public static void setConnDesc(String connDesc) {
+        DBUtils.connDesc = connDesc;
+    }
+
+    public static void setUser(String user) {
+        DBUtils.user = user;
+    }
+
+    public static void setPass(String pass) {
+        DBUtils.pass = pass;
+    }
+
     protected static String connDesc = rb.getString("connDesc");
     /**
      * Nazwa użytkownika bazy danych.

@@ -4,6 +4,7 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +38,19 @@ public class HubFlashSessionDBInserter extends SessionDBInserter{
     }
 
     @Override
-    public void mainThread() throws MeteringSessionException {
+    public int mainThread() throws MeteringSessionException {
         DataPacket dp;
+        int measurmentsCount=0;
         try {
-            while ((dp = metSess.getNextPacket())!=null) {
-                        loadPacket(dp);
-lgr.info("Time:"+System.nanoTime()+","+dp);
+            while ((dp = metSess.getNextPacket(3))!=null) {
+                        measurmentsCount+=loadPacket(dp);
+                        lgr.info("Time:"+System.nanoTime()+","+dp);
                 }
+       lgr.info("Time:"+System.nanoTime()+", new measurments inserted"+measurmentsCount);            
         } finally {
             try {close();} catch (MeteringSessionException e) {/*ignore it*/}
         }
+        return 0; //TODO: wyliczyć liczbę wierszy
     }
     
 }

@@ -8,15 +8,18 @@ package meteringcomreader.callback;
  *
  * @author Juliusz
  */
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +29,8 @@ import meteringcomreader.Hub;
 import meteringcomreader.HubRequest;
 import meteringcomreader.HubResponse;
 import meteringcomreader.HubSessionManager;
-import meteringcomreader.MeteringSessionException;
+import meteringcomreader.exceptions.MeteringSessionCRCException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleStatement;
 import oracle.jdbc.dcn.DatabaseChangeEvent;
@@ -44,15 +48,18 @@ public class DBChangeNotification implements DatabaseChangeListener
       /**
      * Utworzenie loggera systemowego
      */
-    private static final org.slf4j.Logger lgr = LoggerFactory.getLogger(ComReadDispatch.class);
+    private static final org.slf4j.Logger lgr = LoggerFactory.getLogger(DBChangeNotification.class);
     
-    private static final String dbcQuery="select HR_HS_NUMBER from hub_requests where HR_HS_NUMBER=?";
-    private static final String getHubReqests
+    private static final String dbcQuerySQL="select HR_HS_NUMBER from hub_requests where HR_HS_NUMBER=?";
+    private static final String getHubReqestsSQL
             ="select HR_P1,HR_P2,HR_P3,HR_P4,HR_P5,HR_P6,HR_P7,HR_P8,HR_P9,HR_P10, HR_HS_NUMBER,HR_COMMAND from hub_requests where rowid=?";
     private static  PreparedStatement getHubReqestsPS=null;
-    private static final String putHubReqests
+    private static final String putHubReqestsSQL
             ="insert into hub_responses (HP_P1,HP_P2,HP_P3,HP_P4,HP_P5,HP_HR_HS_NUMBER,HP_ERR_MSG) values (?,?,?,?,?,?,?)";
     private static  PreparedStatement putHubReqestsPS=null;
+    
+    private static final String testReverseConnSQL ="{ ? = call hub_service.test_reverse_connection(?, ?)}";
+    private static Random rnd;
 
   
   static public void unregisterForCallback(Hub hub, Connection connection) throws MeteringSessionException{
@@ -93,7 +100,7 @@ public class DBChangeNotification implements DatabaseChangeListener
       // second step: add objects in the registration:
 //      String query=dbcQuery+"'"+ hub.getHubHexId()+"'";
 //       Statement stmt = conn.createStatement();
-      PreparedStatement stmt = conn.prepareStatement(dbcQuery);
+      PreparedStatement stmt = conn.prepareStatement(dbcQuerySQL);
       // associate the statement with the registration:
       ((OracleStatement)stmt).setDatabaseChangeRegistration(dcr);
       stmt.setString(1, hub.getHubHexId());
@@ -107,7 +114,8 @@ public class DBChangeNotification implements DatabaseChangeListener
           lgr.debug(tableNames[i]+" is part of the registration.");
       rs.close();
       stmt.close();
-      lgr.debug("Registred for query:"+dbcQuery+" ?="+ hub.getHubHexId());
+      lgr.debug("Registred for query:"+dbcQuerySQL+" ?="+ hub.getHubHexId());
+      lgr.debug(Long.toString(dcr.getRegId()));
     }
     catch(SQLException ex)
     {
@@ -124,17 +132,22 @@ public class DBChangeNotification implements DatabaseChangeListener
         //throw new MeteringSessionException(ex);
     }               
 }
+
+
   
 
 
     @Override
     public void onDatabaseChangeNotification(DatabaseChangeEvent dce) {
-        lgr.debug(dce.toString());
+        lgr.debug("kolejne wywołanie powiadomienia");
+        lgr.debug(dce.toString());        
+        if (! HubSessionManager.isRegisteredForDCN(dce.getRegId()))
+            return;
         Connection conn = null;
         try {
             conn = DBUtils.createDBConnection();
-            getHubReqestsPS = conn.prepareStatement(getHubReqests);
-            putHubReqestsPS = conn.prepareStatement(putHubReqests);
+            getHubReqestsPS = conn.prepareStatement(getHubReqestsSQL);
+            putHubReqestsPS = conn.prepareStatement(putHubReqestsSQL);
             QueryChangeDescription[] queryChangeDescription = dce.getQueryChangeDescription();
             if (queryChangeDescription==null){
                 lgr.error("queryChangeDescription is null");
@@ -186,7 +199,7 @@ public class DBChangeNotification implements DatabaseChangeListener
         HubResponse hp = new HubResponse();
         hp.setHexHubId(hr.getHexHubId());
         hp.getParameters()[0]="OK";
-        
+        lgr.debug("requested Command:"+hr.getCommand());
         try {
             if ("downloadMeasurmentsFromHub".equals(hr.getCommand())){
                 Date date = parseDate(hr.getParameters()[0]);
@@ -194,7 +207,8 @@ public class DBChangeNotification implements DatabaseChangeListener
             }
             else if("downloadMeasurmentsFromLogger".equals(hr.getCommand())){
                 Date date = parseDate(hr.getParameters()[0]);
-//                HubSessionService.downloadMeasurmentsFromLogger(hr.getHexHubId(), date);
+                int newMeasuments = HubSessionService.downloadMeasurmentsFromLogger(hr.getHexHubId(), date); 
+                hp.getParameters()[1]=Integer.toString(newMeasuments);
             }
             else if("intervalHubFlashMemoryMode".equals(hr.getCommand())){
                 Date startTime = parseDate(hr.getParameters()[0]);
@@ -219,15 +233,28 @@ public class DBChangeNotification implements DatabaseChangeListener
                 boolean enable = parseBool(hr.getParameters()[1]);
 //                HubSessionService.measurerRadio(hr.getHexHubId(), measurerNo, enable);
             }
+            else if("TEST".equals(hr.getCommand())){
+                ; //OK
+            }                
+            else {
+                hp.getParameters()[0]="ERR";
+                hp.setErrMsg("Uknow command");
+            }
         } catch (MeteringSessionException ex) {
-            hp.getParameters()[0]="Error";
-            hp.setErrMsg(ex.getMessage().substring(1, 2000));
+            lgr.error(ex.getMessage());
+            hp.getParameters()[0]="ERR";
+            String errMsg=ex.getMessage();
+            if (errMsg.length()>2000)
+                errMsg = errMsg.substring(1, 2000);
+            hp.setErrMsg(errMsg);
             
         }
         return hp;
     }
     
     protected static Date parseDate(String dateString) throws MeteringSessionException{
+        if (dateString==null || "".equals(dateString))
+            return null;
         SimpleDateFormat format =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         Date parsed =null;
@@ -271,9 +298,53 @@ public class DBChangeNotification implements DatabaseChangeListener
         putHubReqestsPS.setString(7, hp.getErrMsg());
         putHubReqestsPS.executeUpdate();
     }
+
+
     
+    public static boolean testReverseConnection(Hub hub, Connection conn) throws MeteringSessionException{
+        boolean ret=true;
+        boolean testHub=false;
+        String testHubStr="false";
+        
+        if (hub==null){
+            hub=new Hub(Integer.toHexString(rnd.nextInt()), "test");
+            testHub=true;
+            testHubStr="true";
+        }
+        
+        if (testHub){
+            DBChangeNotification.registerForCallback(hub, conn);
+            HubSessionManager.registerTestHub(hub);
+        }
+        try {Thread.sleep(1000*2);} catch (InterruptedException ex) {/*ignore it*/}
+        try{
+            CallableStatement testReverseConnPS = conn.prepareCall(testReverseConnSQL);
+            String hubid=hub.getHubHexId();
+            testReverseConnPS.registerOutParameter(1, Types.VARCHAR);
+            testReverseConnPS.setString(2, hubid);
+            testReverseConnPS.setString(3, testHubStr);
+            testReverseConnPS.execute();
+            String retStr = testReverseConnPS.getString(1);
+            ret="true".equals(retStr);
+            conn.commit();
+//            testReverseConnPS.close();
+//            testReverseConnPS=null;
+        }
+        catch (SQLException ex) {
+            lgr.warn(ex.getMessage());
+            throw new MeteringSessionException(ex);
+        }        
+        finally{                    
+            if (testHub){
+                unregisterForCallback(hub, conn);
+                HubSessionManager.unregisterTestHub(hub);
+            }
+        }
+        return ret;
+    }
+        
     public static void  main(String[]arg) throws MeteringSessionException, InterruptedException{
-        PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
+        PropertyConfigurator.configure(HubSessionManager.class.getResource("/meteringcomreader/log4j.properties"));
 
         Connection conn = DBUtils.createDBConnection();
         Hub hub = new Hub("1", "ComX");
@@ -283,4 +354,9 @@ public class DBChangeNotification implements DatabaseChangeListener
         DBChangeNotification.unregisterForCallback(hub, conn);
         
     }
+    
+    static{
+        rnd= new Random((new Date()).getTime());
+    }
+    
 }

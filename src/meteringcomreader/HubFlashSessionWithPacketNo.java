@@ -4,11 +4,12 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 
 /**
  *
- * @author Juliusz
+ * @author Juliusz Jezierski
  */
 public class HubFlashSessionWithPacketNo extends MeteringSession{
     protected byte[] packets=null;
@@ -78,6 +79,11 @@ public class HubFlashSessionWithPacketNo extends MeteringSession{
     public void close() throws MeteringSessionException {
         hc.sendCommand(Utils.closeHubFlashSessionReq);
         hc.receiveAck(Utils.closeHubFlashSessionRes);
+    }
+
+    @Override
+    public DataPacket getNextPacket(int maxRetries) throws MeteringSessionException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     

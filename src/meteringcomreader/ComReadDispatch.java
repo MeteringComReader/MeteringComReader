@@ -4,6 +4,9 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import java.io.IOException;
@@ -93,7 +96,11 @@ lgr.debug("Time:"+System.nanoTime()+", serialEvent: "+ spe.toString()+","+spe.ge
             loopNo++;
 lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
             try {
-                res = _receiveRes();
+                try{
+                    res = _receiveRes();
+                } catch (MeteringSessionTimeoutException ex) {
+                    return;  //if timeout to get next response then exit
+                }
                 if (res == Utils.radioSessionRes) 
                     try {
                         data =_receiveData(1);
@@ -132,10 +139,10 @@ lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
                     }
                     resp.add(new ComResp(res, data));
                 }
-            } catch (MeteringSessionTimeoutException ex) {
-                return;  //if timeout to get next data then exit
+
             } catch (MeteringSessionException ex) {
-                setResException(ex);
+                //setResException(ex); TODO: usunąć po testach
+                resp.add(new ComResp(ex));
                 return;
             }
         }
@@ -171,18 +178,22 @@ lgr.debug("Time:"+System.nanoTime()+","+"getNextRSPacket exeption dedected in ge
      * w polu {@link #resException}
      */
     public ComResp getNextResp() throws MeteringSessionException{
+/* TODO: usunąć po testach         
        MeteringSessionException e= getResException();
        if (e!=null){
 lgr.debug("Time:"+System.nanoTime()+","+"exeption dedected in getNextResp "+e);           
            throw e;
        }       
+       */
        ComResp ret=null;
         try {
-            ret=resp.poll(Utils.TIMEOUT*10, TimeUnit.MILLISECONDS);
+            ret=resp.poll(Utils.TIMEOUT*12, TimeUnit.MILLISECONDS);
             if (ret==null){
-lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throws exception  in getNextResp "+"Timeout during waiting for response");           
+                lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throws exception  in getNextResp "+"Timeout during waiting for response");           
                 throw new MeteringSessionTimeoutException("Timeout during waiting for response");
             }
+            else if (ret.getExp()!=null)
+                throw ret.getExp();
         } catch (InterruptedException ex) {
             //
         }

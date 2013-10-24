@@ -1,5 +1,7 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +9,7 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,19 +80,31 @@ public class HubConnection implements Runnable{
     public static SerialPort initComPort(CommPortIdentifier portIdentifier) throws MeteringSessionException {
         SerialPort serialPort = null;
         try {
+            
             serialPort = (SerialPort) portIdentifier.open("HubConnection", Utils.TIMEOUT);
+            serialPort.setSerialPortParams(921600,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+/*
             serialPort.setSerialPortParams(115200,
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_EVEN);
+                    */
             serialPort.notifyOnOutputEmpty(true);
-            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveThreshold(1); //TODO: czy to przyczyna "kapania danych"? nie
             serialPort.enableReceiveTimeout(Utils.TIMEOUT);
         } catch (UnsupportedCommOperationException ex) {
+            if (serialPort!=null)
+                serialPort.close();
             throw new MeteringSessionException(ex);
         } catch (PortInUseException ex) {
+            if (serialPort!=null)
+                serialPort.close();
             throw new MeteringSessionException(ex);
         }
+        
         return serialPort;
     }
 
@@ -98,7 +113,19 @@ public class HubConnection implements Runnable{
      * użycie metody {@link #createHubConnection(#Hub)} w celu utworzenia
      * obiektu tej klasy.
      */
-    private  HubConnection() throws MeteringSessionException {
+    private  HubConnection(){
+    }
+    
+    /**
+     * Tworzy puuste połączenie do koncentratora na podstawie <code>hub</code> 
+     * na potrzby testowania połaczenia zwrotnego.
+     * @param hub opis koncentratora 
+     * @return połączenie do koncentratora
+     */    
+    public static HubConnection createEmptyHubConnection(Hub hub){
+        HubConnection hc = new HubConnection();
+        hc.setHub(hub);
+        return hc;
     }
 
     /**
@@ -183,7 +210,7 @@ public class HubConnection implements Runnable{
                     inputStream = serialPort.getInputStream();
                     Utils.sendCommand(outputStream, Utils.closeAllSessionReq);
                     try {
-                        Thread.sleep(Utils.TIMEOUT);
+                        Thread.sleep(Utils.COM_DISCOVERY_TIMEOUT);
                     } catch (InterruptedException ex) {
                         //ignore
                     }
@@ -595,7 +622,7 @@ public class HubConnection implements Runnable{
         byte[] ret = null;
         try{
             ComResp rs = crd.getNextResp();
-            //rs.receiveAck(ack); //TODO:P sprawdzić testowanie
+            rs.receiveAck(ack); //TODO:P sprawdzić testowanie
             ret = rs.receiveData();
         }
         finally{
@@ -837,4 +864,21 @@ public class HubConnection implements Runnable{
         
         return errCode;
     }
+    
+    public void setSerialPortTimeout(int timeoutMS) throws MeteringSessionException{
+        try {
+            serialPort.enableReceiveTimeout(timeoutMS);
+        } catch (UnsupportedCommOperationException ex) {
+            throw new MeteringSessionException(ex);
+        }
+    }
+
+    public void closeRadioSession() throws MeteringSessionException {
+      if(radioSession!=null)
+        try{
+            radioSession.close();
+        }
+        finally{
+            radioSession = null;
+        }    }
 }
