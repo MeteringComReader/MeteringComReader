@@ -4,6 +4,11 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionCRCException;
+import meteringcomreader.exceptions.MeteringSessionException;
+import meteringcomreader.exceptions.MeteringSessionFlashLoggerTransException;
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+
 /**
  * Reprezentuje abstrakcyjny obiekt sesji w bieżącym połączeniu 
  * z koncentratorem.
@@ -55,11 +60,51 @@ abstract public class MeteringSession {
      */
     abstract public DataPacket getNextPacket() throws MeteringSessionException;
     
-    /**
+
+
+   /**
      * Ponownie pobiera kolejny pakiet danych w abstrakcyjnej sesji.
      * @return pobrany pakiet danych
+     * @throws MeteringSessionException zwracany w przypadku niepowodzenia
+     * pobrania pakietu danych
+     */    
+    abstract public DataPacket regetPrevPacket() throws MeteringSessionException;
+
+    /**
+     * Ponownie pobiera kolejny pakiet danych w abstrakcyjnej sesji.
+     * @param maxRetries maksymalna liczba powtórzeń w przypdku niepowodzenia,
+     * po której zgłaszany jest wyjątek
+     * @return pobrany pakiet danych
+     * @throws MeteringSessionException zwracany w przypadku niepowodzenia
+     * pobrania pakietu danych
      */
-    abstract public DataPacket regetPrevPacket();
-     
+    public DataPacket getNextPacket(int maxRetries) throws MeteringSessionException {
+           boolean go=true;
+           DataPacket packet=null;
+           int retries=0;
+           while (go){
+               try{
+                if (retries==0)
+                    packet = getNextPacket();
+                else
+                    packet = regetPrevPacket();                    
+               go = false;
+
+               }catch (MeteringSessionTimeoutException e){
+                   if (retries==maxRetries)
+                       throw e;
+                   retries++; 
+               }catch (MeteringSessionCRCException e){
+                   if (retries==maxRetries)
+                       throw e;
+                   retries++;                    
+               }catch (MeteringSessionFlashLoggerTransException e){
+                   if (retries==maxRetries)
+                       throw e;
+                   retries++;                                       
+               }
+           }
+           return packet;
+    }     
     
 }

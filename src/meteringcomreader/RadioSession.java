@@ -1,6 +1,8 @@
 package meteringcomreader;
 
 
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +45,8 @@ public class RadioSession extends MeteringSession implements Runnable{
             super(hc);
             this.timeout=timeout;
             startRadioSession();
-            pinger=new Thread(this,"RadioSessionPinger for hub:"+hc.hub.getHubHexId()); //TODO: enable pinger
-            pinger.start();
+//            pinger=new Thread(this,"RadioSessionPinger for hub:"+hc.hub.getHubHexId()); //TODO: enable pinger
+//            pinger.start();
             
     }
     
@@ -161,6 +163,5 @@ public class RadioSession extends MeteringSession implements Runnable{
     synchronized public void setRun(boolean run) {
         this.run = run;
     }
-
 
 }

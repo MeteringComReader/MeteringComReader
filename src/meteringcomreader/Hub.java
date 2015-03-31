@@ -1,6 +1,8 @@
 
 package meteringcomreader;
 
+import oracle.jdbc.dcn.DatabaseChangeRegistration;
+
 /**
  * Reprezentuje koncentrator urządzeń A4P.
  * @author Juliusz Jezierski
@@ -16,17 +18,39 @@ public class Hub {
      * Nazwa portu, do którego podłączony jest koncentrator
      */
     protected String comPortName;
+
+    /**
+     * Obiekt umożliwiający rejestrowanie listenerów
+     * na zdarzenia modyfikacji bazy danych
+     */    
+    public DatabaseChangeRegistration getDCR() {
+        return dcr;
+    }
+
+    public void setDCR(DatabaseChangeRegistration dcr) {
+        this.dcr = dcr;
+    }
     
+    protected DatabaseChangeRegistration dcr;
 
     /**
      * Konstruuje obiekt koncentratora
-     * @param hubId heksadecymalny identyfikator koncentratora
+     * @param hubId  identyfikator koncentratora
      * @param comPortName nazwa portu, do którego podłączony jest koncentrator
      */
     public Hub(long hubId, String comPortName){
         this.hubId=convertHubId2Hex(hubId);
         this.comPortName=comPortName;
     }
+    /**
+     * Konstruuje obiekt koncentratora
+     * @param hexHubId heksadecymalny identyfikator koncentratora
+     * @param comPortName nazwa portu, do którego podłączony jest koncentrator
+     */
+    public Hub(String hexHubId, String comPortName){
+        this.hubId=hexHubId;
+        this.comPortName=comPortName;
+    }    
         
     /** 
      * Zwraca nazwę portu, do którego podłączony jest koncentrator
@@ -61,7 +85,7 @@ public class Hub {
      * Zwraca heksadecymalny identyfikator koncentratora
      * @return heksadecymalny identyfikator koncentratora
      */
-    String getHubHexId() {
+    public String getHubHexId() {
         return hubId;
     }
 }

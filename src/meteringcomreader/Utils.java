@@ -1,5 +1,8 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.CommPortIdentifier;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +51,12 @@ public class Utils {
     
 
     final static int hubIdentifictionAck=0xAA01;
+    
+    final static int hubFirmwareVerReq=0X0201;
+    final static int hubFirmwareVerRes=0X0201;
+    final static int hubHardwareVerReq=0X0301;
+    final static int hubHardwareVerRes=0X0301;
+    
     final static int setHubPoweredAfterSessionTrueRes=0x0804;
     final static int setHubPoweredAfterSessionFalseRes=0x0004; 
     
@@ -69,8 +78,8 @@ public class Utils {
      * Maksymalny czas oczekiwania na zakończenie operacji odczytu
      * ze strumienia danych równy wyrażony w milisekundach.
      */
-    public static final int TIMEOUT=100;
-//    public static final int TIMEOUT=2000;
+    public static final int COM_DISCOVERY_TIMEOUT=200;
+    public static final int TIMEOUT=1500; //TODO zmniejszyć
 
 
     static final int intervalHubFlashMemMode=1;
@@ -95,10 +104,30 @@ public class Utils {
     
     final static int startLoggerFlashRes=0x0102;
     static final int startLoggerFlashSessionReq=0x0102;
+    static final int readFirstRecodTimeFlashSessionReq=0x020C;
+    static final int readFirstRecodTimeFlashSessionRes=0x020C;
+    static final int readLastRecodTimeFlashSessionReq=0x030C;
+    static final int readLastRecodTimeFlashSessionRes=0x030C;
+    static final int readPeriodRecodTimeFlashSessionReq=0x000C;
+    static final int readPeriodRecodTimeFlashSessionRes=0x000C;
+    static final int stopLoggerFlashSessionReq=0xF102;
+    static final int stopLoggerFlashSessionRes=0x0902;
+    static final int countRecordsPerPageLoggerFlashSessionReq=0x040C;
+    static final int countRecordsPerPageLoggerFlashSessionRes=0x040C;
+    static final int getIdLoggerFlashSessionReq=0x000d;
+    static final int getIdLoggerFlashSessionRes=0x000d;
+    
+    static final int getLoggerFirmwareVerReq=0x020d;
+    static final int getLoggerFirmwareVerRes=0x020d;
 
-    final static int closeAllSessionRes=0xFF02;
+    static final int getLoggerHardwareVerReq=0x030d;
+    static final int getLoggerHardwareVerRes=0x030d;
+
+
+    
+    final static int closeAllSessionRes=0x0F02;
+    final static int closeLoggerFlashSessionReq=0xF102;
     final static int closeLoggerFlashSessionRes=0x0902;
-    final static int closeLoggerFlashSessionReq=0x0902;
     final static int getloggersRes=0x0006;
     final static int getChargeHubBatteryLevelRes=0x0007;
     final static int getHubTimeReq=0x0107;
@@ -112,13 +141,23 @@ public class Utils {
     final static int enableLoggerRadioReq=0x010D;
     final static int enableLoggerRadioAck=0x010D;
     
-    final static int getNextHubFlashSessionReq=0x020A;
+    final static int getNextHubFlashSessionReq=0x020A;    
     final static int getNextHubFlashSessionRes=0x020A;
+    final static int getPrevHubFlashSessionReq=0x021A;    
+    final static int getPrevHubFlashSessionRes=0x021A;
+    
+    final static int getNext16HubFlashSessionReq=0x022A;    
+    final static int getNext16HubFlashSessionRes=0x020A;
+    final static int getPrev16HubFlashSessionReq=0x023A;    
+    final static int getPrev16HubFlashSessionRes=0x021A;
+    
     final static int closeHubFlashSessionReq=0xF202;
     final static int closeHubFlashSessionRes=0x0A02;
     
     static final int getNextLoggerFlashSessionReq=0x010A;
     static final int getNextLoggerFlashSessionRes=0x010A;
+    static final int regetPrevLoggerFlashSessionReq=0x010B;
+    static final int regetPrevLoggerFlashSessionRes=0x010B;
     
 /**
  * Zamienia long na tablicę bajtów według Little Endian.
@@ -173,6 +212,17 @@ public class Utils {
      */
     static long bytes2long(byte[] data, int size){
         return bytes2long(data, 0, size);
+    }
+    
+    static String bytes2HexStr(byte[] data){
+        if (data==null)
+            return "";
+        StringBuilder sb =  new StringBuilder(100);
+        for (int i=0; i<data.length; i++ ){
+            sb.append(String.format("%0#2X", data[i]));
+            sb.append(',');
+        }
+        return sb.toString();
     }
     
     /**
@@ -246,12 +296,19 @@ public class Utils {
      * @throws MeteringSessionException w przypadku wystąpienia wyjątku  we-wy przy operacji na strumieniu 
      */
     static void sendCommand(OutputStream outputStream, int command, byte[] data) throws MeteringSessionException {
-        byte buf[]=Utils.long2bytes(command, (byte)0x02);
+        byte cmd[]=Utils.long2bytes(command, (byte)0x02);
         
         try {
-            outputStream.write(buf);
-            if (data!=null) 
-                outputStream.write(data);
+            if (data==null) 
+                outputStream.write(cmd);
+            else{
+                byte[] buf = new byte[2+data.length];
+                buf[0]=cmd[0];
+                buf[1]=cmd[1];
+                for (int i=0; i<data.length; i++)
+                    buf[i+2]=data[i];
+                outputStream.write(buf);
+            }
             outputStream.flush();
         } catch (IOException ex) {
             throw new MeteringSessionSPException(ex);

@@ -1,5 +1,6 @@
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.util.HashMap;
 import java.util.Map;
 

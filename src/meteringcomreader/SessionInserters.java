@@ -6,24 +6,24 @@ package meteringcomreader;
 
 import java.util.HashMap;
 import java.util.Map;
-import meteringcomreader.RadioSessionDBInserter;
+import meteringcomreader.SessionInserter;
 
 /**
  *
  * @author Juliusz
  */
-public class SessionInserters extends HashMap<String, RadioSessionDBInserter> {
+public class SessionInserters extends HashMap<String, SessionInserter> {
     
-    public  void addInserter(String hubId, RadioSessionDBInserter ins){
+    public  void addInserter(String hubId, SessionInserter ins){
         put(hubId, ins);
     }
-    public  RadioSessionDBInserter getInserter(String hubId){
+    public  SessionInserter getInserter(String hubId){
         return get(hubId);
     }
-    public  RadioSessionDBInserter removeInserter(String hubId){
+    public  SessionInserter removeInserter(String hubId){
         return remove(hubId);
     }
-    public SessionInserters(Map<? extends String, ? extends RadioSessionDBInserter> map) {
+    public SessionInserters(Map<? extends String, ? extends SessionInserter> map) {
         super(map);
     }
 

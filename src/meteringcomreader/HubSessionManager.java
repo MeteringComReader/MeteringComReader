@@ -4,12 +4,13 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import meteringcomreader.gui.LaunchGui;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.slf4j.Logger;
@@ -20,26 +21,51 @@ import org.slf4j.LoggerFactory;
  *
  * @author Juliusz
  */
-public class HubSessionManager implements Runnable {
+abstract public class HubSessionManager implements Runnable {
     /**
      * Utworzenie loggera systemowego
      */
     private static final Logger lgr = LoggerFactory.getLogger(HubSessionManager.class);
 
 
-    static protected Hubs discoveredHubs;
-    static protected HubsSessions hubsSessions = new HubsSessions(10);
+     protected Hubs discoveredHubs;
+     protected HubsSessions hubsSessions = new HubsSessions(10);
     
-    static HubSessionManager hbs=null;
+     static protected HubSessionManager hbs=null;
+
+     
+    public  void registerTestHub(Hub hub){
+        HubConnection hc = HubConnection.createEmptyHubConnection(hub);
+        getHubsSessions().put(hub.getHubHexId(), hc);
+    }
+    
+    public  void unregisterTestHub(Hub hub){
+        getHubsSessions().remove(hub.getHubHexId());
+    }
+            
+    public  boolean isRegisteredForDCN(long regId) {
+        HubsSessions hubsSess = getHubsSessions();
+
+        Set<Map.Entry<String, HubConnection>> connectionSet= hubsSess.entrySet();
+        Iterator<Map.Entry<String, HubConnection>> it = connectionSet.iterator();
+        while(it.hasNext()){
+            Map.Entry<String, HubConnection> pair= it.next();
+            HubConnection hc= pair.getValue();
+            long registredId = hc.getHub().getDCR().getRegId();
+            if (regId==registredId)
+                return true;
+        }        
+        return false;        
+    }
     
     protected boolean runHubSessionManager=true;
     protected Thread hubSessionManagerThread=null;
     
-        static protected SessionInserters radioInserters=new SessionInserters(10);
-//    static protected SessionInserters flashInserters=new SessionInserters(10);
+         protected SessionInserters radioInserters=new SessionInserters(10);
+//     protected SessionInserters flashInserters=new SessionInserters(10);
 
 
-    private HubSessionManager() throws MeteringSessionException {
+    protected HubSessionManager() throws MeteringSessionException {
         if (hbs==null)
             HubSessionManager.hbs=this;
         else
@@ -48,15 +74,14 @@ public class HubSessionManager implements Runnable {
     
 
             
-    static public void startHubSessionManager() throws MeteringSessionException
-    {
-        hbs=new HubSessionManager();
-        Thread hbst= new Thread(hbs, "HubSessionManagerThread");
+     public void startHubSessionManager() throws MeteringSessionException    {
+        Thread hbst= new Thread(hbs, "HubSessionDBManagerThread");
         hbs.setHubSessionManagerThread(hbst);
         hbst.start();
     }
 
-    static public void stopHubSessionManager() throws MeteringSessionException
+
+     public void stopHubSessionManager() throws MeteringSessionException
     {
         if (hbs!=null){
             hbs.setRunHubSessionManager(false);
@@ -68,19 +93,25 @@ public class HubSessionManager implements Runnable {
             }
             closeAllConnections();
             closeAllInserters();
-            SessionDBInserterHelper.unregisterAllHubs();
+            Set<Map.Entry<String, Hub>> hubsSet= discoveredHubs.entrySet();
+            Iterator<Entry<String, Hub>> it = hubsSet.iterator();
+            while(it.hasNext()){
+                Entry<String, Hub> pair= it.next();
+                Hub hub= pair.getValue();
+                SessionDBInserterHelper.unregisterHub(hub);
+            }            
             hbs=null;
         }
     }
 
 
     
-    static public Hubs discoverHubs(){
+     public Hubs discoverHubs(){
         discoveredHubs=HubConnection.discoverHubs(getHubsSessions());
         return getDiscoveredHubs();
     }
     
-    static public HubConnection connectHubAndStartRS(String hubNo, int timeout) throws MeteringSessionException{        
+     public HubConnection connectHubAndStartRS(String hubNo, int timeout) throws MeteringSessionException{        
         Hub hub = getDiscoveredHubs().getHub(hubNo);
         HubConnection hc = HubConnection.createHubConnection(hub);
         getHubsSessions().put(hubNo, hc);
@@ -88,9 +119,10 @@ public class HubSessionManager implements Runnable {
         return hc;
     }
     
-    static public void closeHubSession(String hubNo){
+     public void closeHubSession(Hub hub){
         try {
-            RadioSessionDBInserter inserter = radioInserters.getInserter(hubNo);
+            String hubNo = hub.getHubHexId();
+            SessionInserter inserter = radioInserters.getInserter(hubNo);
             if (inserter!=null)
                 inserter.close();
             radioInserters.removeInserter(hubNo);
@@ -98,36 +130,46 @@ public class HubSessionManager implements Runnable {
             if (hc!=null)
                 hc.close();
             getHubsSessions().remove(hubNo);
-            SessionDBInserterHelper.unregisterHub(hubNo);
+            SessionDBInserterHelper.unregisterHub(hub);
         } catch (MeteringSessionException ex) {
             //ignore it
         }
     }
     
-    static public void downloadMeasurmentsFromHub(String hubNo, Timestamp from) throws MeteringSessionException{
+     public void downloadMeasurmentsFromHub(String hubNo, Timestamp from) throws MeteringSessionException{
         HubConnection hc = getHubsSessions().getHubConnection(hubNo);
         hc.createHubFlashSession(from);
     }
 
-    static public void downloadMeasurmentsFromLogger(String hubNo, Timestamp from) throws MeteringSessionException{
+     public int downloadMeasurmentsFromLogger(String hubNo, Timestamp from) throws MeteringSessionException{
         HubConnection hc = getHubsSessions().getHubConnection(hubNo);
-        hc.createLoggerFlashSession(from);
+        int newMeasurments = 0;
+        hc.closeRadioSession();
+        try{
+            LoggerFlashSessionDBInserter loggerFlashSessionDBInserter = LoggerFlashSessionDBInserter.createLoggerFlashSessionDBInserter(hc, from);
+            newMeasurments = loggerFlashSessionDBInserter.mainThread();                    
+        }
+        finally{
+            hc.closeLoggerFlashSession();
+            hc.createRadioSession(61); //TODO zmienić timeout
+        }
+        return newMeasurments;
     }
     /**
      * @return the discoveredHubs
      */
-    public static Hubs getDiscoveredHubs() {
+    public  Hubs getDiscoveredHubs() {
         return discoveredHubs;
     }
 
     /**
      * @return the hubsSessions
      */
-    public static HubsSessions getHubsSessions() {
+    public  HubsSessions getHubsSessions() {
         return hubsSessions;
     }
 
-    public static void closeAllConnections() {
+    public  void closeAllConnections() {
         Set<Map.Entry<String, HubConnection>> connectionSet= getHubsSessions().entrySet();
         Iterator<Entry<String, HubConnection>> it = connectionSet.iterator();
         while(it.hasNext()){
@@ -140,12 +182,12 @@ public class HubSessionManager implements Runnable {
 lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessions().isEmpty());
     }
 
-    static void closeAllInserters() {
-        Set<Map.Entry<String, RadioSessionDBInserter>> insertersSet= radioInserters.entrySet();
-        Iterator<Map.Entry<String, RadioSessionDBInserter>> it = insertersSet.iterator();
+    protected  void closeAllInserters() {
+        Set<Map.Entry<String, SessionInserter>> insertersSet= radioInserters.entrySet();
+        Iterator<Map.Entry<String, SessionInserter>> it = insertersSet.iterator();
         while(it.hasNext()){
-            Map.Entry<String, RadioSessionDBInserter> pair= it.next();
-            RadioSessionDBInserter ins= pair.getValue();
+            Map.Entry<String, SessionInserter> pair= it.next();
+            SessionInserter ins= pair.getValue();
             try {
                 ins.close();
             } catch (MeteringSessionException ex) {
@@ -156,29 +198,6 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
         }
  lgr.debug("Time:"+System.nanoTime()+","+"is radioInserters empty "+radioInserters.isEmpty());
     }    
-
-    @Override
-    public void run() {
-        while(isRunHubSessionManager()){
-            
-            try{
-                Hubs hubs = HubSessionManager.discoverHubs();
-                meteringcomreader.SessionDBInserterHelper.registerHubs(hubs);
-                startHubSessionAndRS(hubs);
-                try {
-                    Thread.sleep(1000*20);
-                } catch (InterruptedException ex) {
-                    //ignore it;
-                }
-            } catch(MeteringSessionSPException ex){
-                    lgr.warn(null, ex);
-            } catch(MeteringSessionException ex){
-                    lgr.warn(null, ex);
-            }
-        }
-      
-    }
-
 
     /**
      * @return the hubSessionManagerThread
@@ -208,14 +227,10 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
         this.runHubSessionManager = runHubSessionManager;
     }
     
-    protected static void startHubSessionAndRS(String hubNo) throws MeteringSessionException{
-        HubConnection hc = HubSessionManager.connectHubAndStartRS(hubNo, 61); //TODO 1)przekazać parametr do wywołania(?), 2)zmienić timeout
-        RadioSessionDBInserter sessionInserter = RadioSessionDBInserter.createRadioSessionDBInserter(hc);        
-        sessionInserter.mainThread(); 
-        radioInserters.addInserter(hubNo, sessionInserter);
-    }
+    abstract protected  void startHubSessionAndRS(String hubNo) throws MeteringSessionException;
+
     
-    protected static void startHubSessionAndRS(Hubs hubs) throws MeteringSessionException{
+    protected  void startHubSessionAndRS(Hubs hubs) throws MeteringSessionException{
         Set<Map.Entry<String, Hub>> connectionSet= hubs.entrySet();
         Iterator<Entry<String, Hub>> it = connectionSet.iterator();
         while(it.hasNext()){
@@ -225,12 +240,12 @@ lgr.debug("Time:"+System.nanoTime()+","+"is hubsSessionsMap empty "+getHubsSessi
         }
     }
     
-   public static  void addShutdownHook(){
+   public   void addShutdownHook(){
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {try {
-lgr.info("stopping hubSessionManager")        ;
-                    HubSessionManager.stopHubSessionManager();
+                    lgr.info("stopping hubSessionManager");
+                    stopHubSessionManager();
                 } catch (MeteringSessionException ex) {
                     lgr.warn(null, ex);
                 }
@@ -238,15 +253,4 @@ lgr.info("stopping hubSessionManager")        ;
             });       
    }
 
-    public static void main(String args[]) throws MeteringSessionException, InterruptedException{
-        
-        PropertyConfigurator.configure(HubSessionManager.class.getResource("log4j.properties"));
-
-        addShutdownHook();
-        HubSessionManager.startHubSessionManager();
-        
-        Thread.sleep(1000*60*300);
-        
-
-    }
 }

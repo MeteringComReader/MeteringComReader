@@ -4,13 +4,19 @@
  */
 package meteringcomreader;
 
+import gnu.io.SerialPort;
+import meteringcomreader.exceptions.MeteringSessionTimeoutException;
+import meteringcomreader.exceptions.MeteringSessionSPException;
+import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +45,13 @@ public class ComReadDispatch implements SerialPortEventListener{
      * Reprezentuje kolejkę, w której metoda serialEvent umieszcza odebrane 
      * z koncentratora pakiety danych odebrane w sesji radiowej.
      */
-    protected BlockingQueue<DataPacket> rsData=new LinkedBlockingQueue<DataPacket>();
+    protected BlockingQueue<DataPacket> rsData=new LinkedBlockingQueue<DataPacket>(1000);
     
     /**
      * Reprezentuje kolejkę, w której metoda serialEvent umieszcza odpowiedzi odebrane 
      * z koncentratora z wyjątkiem danych z sesji radiowej.
      */
-    protected BlockingQueue<ComResp> resp=new LinkedBlockingQueue<ComResp>();
+    protected BlockingQueue<ComResp> resp=new LinkedBlockingQueue<ComResp>(1000);
     
     /**
      * Służy do przekazania wyjątku zgłaszanego w metodzie serialEvent
@@ -58,17 +64,23 @@ public class ComReadDispatch implements SerialPortEventListener{
      * przy odbieraniu odpowiedzi (z wyjątkiem danych odbieranych w sesji radiowej).
      */
     protected MeteringSessionException resException=null;
+    protected SerialPort sp;
     
     
     /**
      * Konstruuje obiekt ekspedytora inicjując pole {@link #inputStream}.
      * @param in parametr inicjujący pole {@link #inputStream}
      */
+/*
     public ComReadDispatch(InputStream in){
         this.inputStream=in;
     }
+*/
     
-    
+    public ComReadDispatch(InputStream in, SerialPort sp) {
+        this.sp=sp;
+        this.inputStream=in;
+    }    
 
     /**
      * Implementacja metody uruchamianej w przypadku wykrycia zdarzenia na strumieniu
@@ -82,7 +94,7 @@ lgr.debug("Time:"+System.nanoTime()+", serialEvent: "+ spe.toString()+","+spe.ge
         if(spe.getEventType()!=SerialPortEvent.DATA_AVAILABLE){ 
             return;
         }
-        
+       
         int loopNo=0;
         int res;
         byte[]data=null;
@@ -93,31 +105,38 @@ lgr.debug("Time:"+System.nanoTime()+", serialEvent: "+ spe.toString()+","+spe.ge
             loopNo++;
 lgr.debug("Time:"+System.nanoTime()+" serialEvent loopNo:"+loopNo);
             try {
-                res = _receiveRes();
+                try{
+                    res = _receiveRes();
+                } catch (MeteringSessionTimeoutException ex) {
+                    return;  //if timeout to get next response then exit
+                }
                 if (res == Utils.radioSessionRes) 
                     try {
                         data =_receiveData(1);
                         frameSize = 0xFF & data[0];
-                        if (frameSize==DataPacket.LEN){                           
-                            data = _receiveData(DataPacket.LEN);
-lgr.debug("Time:"+System.nanoTime()+", received new DP ");                            
-                            DataPacket dp = new DataPacket(data);
-                            rsData.add(dp);
-lgr.debug("Time:"+System.nanoTime()+", new DP inserted into queue");                            
-                        }
+//                        if (frameSize==DataPacket.LEN){                      
+                            data = _receiveData(frameSize); //ramki o zmiennej długości
+                            lgr.debug("Time:"+System.nanoTime()+", received new DP ");                            
+                            DataPacket dp = new DataPacket(data, frameSize);                            
+                            rsData.offer(dp);
+                            lgr.debug("Time:"+System.nanoTime()+", new DP inserted into queue");                            
+/*
+                    }
                         else{
                             data =_receiveData(frameSize); //unknown frame format
- lgr.debug("Time:"+System.nanoTime()+", unknown frame format, len:"+frameSize);                          
+                            lgr.debug("Time:"+System.nanoTime()+", unknown frame format, len:"+frameSize);                          
                         }
+*/                
                     } catch (MeteringSessionTimeoutException ex) {
                         return;  //if timeout to get next data then exit
                     } catch (MeteringSessionException ex) {
-lgr.debug("Time:"+System.nanoTime()+","+" exeption dedected in serialEvent"+ex);                                   
+                        lgr.debug("Time:"+System.nanoTime()+","+" exeption dedected in serialEvent"+ex);                                   
                         setRSException(ex);
                         return;
                     }
                 else {
                     size=ComResp.getResDataSize(res);
+                    lgr.debug("Size for:0x"+Integer.toHexString(res)+ " : "+Integer.toString(size) );
                     if((size&0x0FFF)==0x0FFF){ //next byte detemines data size
                         len=((int)Utils.bytes2long(_receiveData(1), 1))
                                 *(1+size>>>12); // older 4 bits = len multiplier
@@ -129,12 +148,12 @@ lgr.debug("Time:"+System.nanoTime()+","+" exeption dedected in serialEvent"+ex);
                     else{
                         data=null;
                     }
-                    resp.add(new ComResp(res, data));
+                    resp.offer(new ComResp(res, data));
                 }
-            } catch (MeteringSessionTimeoutException ex) {
-                return;  //if timeout to get next data then exit
+
             } catch (MeteringSessionException ex) {
-                setResException(ex);
+                //setResException(ex); TODO: usunąć po testach
+                resp.add(new ComResp(ex));
                 return;
             }
         }
@@ -170,18 +189,22 @@ lgr.debug("Time:"+System.nanoTime()+","+"getNextRSPacket exeption dedected in ge
      * w polu {@link #resException}
      */
     public ComResp getNextResp() throws MeteringSessionException{
+/* TODO: usunąć po testach         
        MeteringSessionException e= getResException();
        if (e!=null){
 lgr.debug("Time:"+System.nanoTime()+","+"exeption dedected in getNextResp "+e);           
            throw e;
        }       
+       */
        ComResp ret=null;
         try {
-            ret=resp.poll(Utils.TIMEOUT*10, TimeUnit.MILLISECONDS);
+            ret=resp.poll(Utils.TIMEOUT*12, TimeUnit.MILLISECONDS);
             if (ret==null){
-lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throws exception  in getNextResp "+"Timeout during waiting for response");           
+                lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throws exception  in getNextResp "+"Timeout during waiting for response");           
                 throw new MeteringSessionTimeoutException("Timeout during waiting for response");
             }
+            else if (ret.getExp()!=null)
+                throw ret.getExp();
         } catch (InterruptedException ex) {
             //
         }
@@ -199,34 +222,86 @@ lgr.debug("Time:"+System.nanoTime()+","+Thread.currentThread().getName()+" throw
      * @throws MeteringSessionException w przypadku wystąpienia błędów
      * we-wy na strumieniu {@link #inputStream}
      */
+/*    
     protected int _readBytes(byte[]buf, int size) throws MeteringSessionException{
-        byte ret[] = new byte[1];
-        int len;
-        
-        
-System.out.print("Time:"+System.nanoTime()+", ");                
-        for(int i=0; i<size; i++){           
-            try {
-                len=this.inputStream.read(ret);
-                if(len==-1) 
-                    throw new MeteringSessionException("Serial EOF");
-                if(len==0) {
-lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
-                    throw new MeteringSessionTimeoutException("Serial port read timeout");
-                }
-System.out.print(String.format("%0#2X", ret[0])+',');               
-                buf[i]=ret[0];
-            } catch (IOException ex) {
-lgr.debug("Time:"+System.nanoTime()+","+"IOException dedected in _readBytes"+ex);                
-                new MeteringSessionSPException(ex);
+
+        int len=0;
+
+        try{
+                try {
+                    sp.enableReceiveThreshold(size);
+                    len=this.inputStream.read(buf, 0, size);
+                    if(len==-1) 
+                        throw new MeteringSessionException("Serial EOF");
+                    if(len==0) {
+                        lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
+                        throw new MeteringSessionTimeoutException("Serial port read timeout");
+                    }            
+                } catch (IOException ex) {
+                    lgr.debug("Time:"+System.nanoTime()+","+"IOException dedected in _readBytes"+ex);                
+                    throw new MeteringSessionSPException(ex);
+                } catch (UnsupportedCommOperationException ex) {
+                        lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
+                        throw new MeteringSessionException(ex);
             }
         }
-System.out.println();        
-lgr.debug("Time:"+System.nanoTime()+","+" _readBytes size:"+size);                
+        finally{
+            lgr.debug("Time:"+System.nanoTime()+","+" _readBytes size:"+len);                
+              if (lgr.isDebugEnabled()){
+                   StringBuilder sb = new StringBuilder(1000);
+                   sb.append("Time:");
+                   sb.append(System.nanoTime());
+                   sb.append(", ");                 
+                   for (int i=0; i<len; i++){
+                    sb.append(String.format("%0#2X", buf[i]));
+                    sb.append(',');          
+                   }
+                   lgr.debug(sb.toString());                
+              }            
+        }
+
+        return len;
+    }
+*/    
+      protected int _readBytes(byte[]buf, int size) throws MeteringSessionException{
+        byte ret[] = new byte[1];
+        int len;
+
+        try{
+            for(int i=0; i<size; i++){           
+                try {
+                    len=this.inputStream.read(ret);
+                    if(len==-1) 
+                        throw new MeteringSessionException("Serial EOF");
+                    if(len==0) {
+                        lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" Serial port read timeout in _readBytes size"+size);                
+                        throw new MeteringSessionTimeoutException("Serial port read timeout");
+                    }
+                    buf[i]=ret[0];
+                } catch (IOException ex) {
+                    lgr.debug("Time:"+System.nanoTime()+","+"IOException dedected in _readBytes"+ex);                
+                    throw new MeteringSessionSPException(ex);
+                }
+            }
+        }
+        finally{
+              lgr.debug("Time:"+System.nanoTime()+","+" _readBytes size:"+size);                
+              if (lgr.isDebugEnabled()){
+                   StringBuilder sb = new StringBuilder(1000);
+                   sb.append("Time:");
+                   sb.append(System.nanoTime());
+                   sb.append(", ");                 
+                   for (int i=0; i<size; i++){
+                    sb.append(String.format("%0#2X", buf[i]));
+                    sb.append(',');          
+                   }
+                   lgr.debug(sb.toString());     
+              }
+        }
 
         return size;
-    }
-   
+    } 
+
    /**
     * Setter dla pola {@link #rsException}.
     * @param e ustawiany wyjątek

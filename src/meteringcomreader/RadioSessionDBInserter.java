@@ -4,6 +4,7 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -41,9 +42,10 @@ public class RadioSessionDBInserter extends SessionDBInserter implements Runnabl
      }
 
     @Override
-    public void mainThread() throws MeteringSessionException {
+    public int mainThread() throws MeteringSessionException {
         setThread(new Thread(this, "radioSessionDBInserter for hub: "+hc.hub.getHubHexId()));
         getThread().start();
+        return 0;
     }
 
     
@@ -54,10 +56,10 @@ public class RadioSessionDBInserter extends SessionDBInserter implements Runnabl
             while (isShouldRun()) {
                 dp = metSess.getNextPacket();
                 loadPacket(dp);
-lgr.debug("Time:"+System.nanoTime()+","+dp);
+                lgr.info("Time:"+System.nanoTime()+","+dp);
             } 
         }catch (MeteringSessionException tout) {
-            
+            lgr.debug("Exception while processing new packet: "+tout.getMessage());            
         }
         finally{
             setThread(null);

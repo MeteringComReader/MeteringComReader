@@ -4,11 +4,12 @@
  */
 package meteringcomreader;
 
+import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 
 /**
  *
- * @author Juliusz
+ * @author Juliusz Jezierski
  */
 public class HubFlashSessionWithPacketNo extends MeteringSession{
     protected byte[] packets=null;
@@ -54,16 +55,20 @@ public class HubFlashSessionWithPacketNo extends MeteringSession{
                 bytesCounter=0;
                 packetsCounter=0;        
             }
+            
             while(dp==null && packets!=null){
                 int packetSize=packets[bytesCounter];
                 bytesCounter++;
-                if (packetSize==DataPacket.LEN){
-                    dp=new DataPacket(packets, bytesCounter);
-                }
+//throw new  RuntimeException("nie zaimplementowno zmiennej długosci ramki");
+               
+//                if (packetSize==DataPacket.LEN){
+                    dp=new DataPacket(packets, packetSize, bytesCounter);
+//                }
                 bytesCounter+=packetSize;
                 packetsCounter++;
                 if ((packetsCounter)==packetsNo)
                     packets=null;
+                
             }
         }
         return dp;
@@ -78,6 +83,11 @@ public class HubFlashSessionWithPacketNo extends MeteringSession{
     public void close() throws MeteringSessionException {
         hc.sendCommand(Utils.closeHubFlashSessionReq);
         hc.receiveAck(Utils.closeHubFlashSessionRes);
+    }
+
+    @Override
+    public DataPacket getNextPacket(int maxRetries) throws MeteringSessionException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     
