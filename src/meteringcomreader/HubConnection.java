@@ -3,6 +3,8 @@ package meteringcomreader;
 import meteringcomreader.exceptions.MeteringSessionSPException;
 import meteringcomreader.exceptions.MeteringSessionException;
 import gnu.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -92,9 +94,13 @@ public class HubConnection implements Runnable{
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_EVEN);
                     */
+// http://docs.oracle.com/cd/E17802_01/products/products/javacomm/reference/api/javax/comm/CommPort.html#getInputStream%28%29            
             serialPort.notifyOnOutputEmpty(true);
-            serialPort.enableReceiveThreshold(1); //TODO: czy to przyczyna "kapania danych"? nie
-            serialPort.enableReceiveTimeout(Utils.TIMEOUT);
+            serialPort.enableReceiveThreshold(1); 
+//            serialPort.disableReceiveThreshold();
+            serialPort.enableReceiveTimeout(Utils.TIMEOUT); //maksymalny czas oczekiwania na odczyt to receiveThreshold lub enableReceiveTimeout
+            int inpBuffSize = serialPort.getInputBufferSize();
+            lgr.info("Input BufferSize="+inpBuffSize);
         } catch (UnsupportedCommOperationException ex) {
             if (serialPort!=null)
                 serialPort.close();
@@ -144,12 +150,14 @@ public class HubConnection implements Runnable{
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(hub.getComPortName());
             SerialPort serialPort = HubConnection.initComPort(portIdentifier);
             
-            hc.setInputStream(serialPort.getInputStream());            
-            hc.setOutputStream(serialPort.getOutputStream());
+            hc.setInputStream(new HexInputStream(serialPort.getInputStream()));            
+
+            hc.setOutputStream( new HexOutputStream(  new BufferedOutputStream( serialPort.getOutputStream() ) ) );
+            
             hc.setSerialPort(serialPort);
             hc.setHub(hub);
 
-            ComReadDispatch crd = new ComReadDispatch(hc.getInputStream());
+            ComReadDispatch crd = new ComReadDispatch(hc.getInputStream(), hc.getSerialPort());
             hc.setCrd(crd);
             serialPort.addEventListener(crd);
             serialPort.notifyOnDataAvailable(true); 
@@ -205,9 +213,10 @@ public class HubConnection implements Runnable{
                         throw new MeteringSessionException("Serial port currently in use");
                     }
                     serialPort = HubConnection.initComPort(portId);
-
-                    outputStream = serialPort.getOutputStream();
-                    inputStream = serialPort.getInputStream();
+                    inputStream = (new HexInputStream(serialPort.getInputStream()));            
+                    outputStream = ( new HexOutputStream(  new BufferedOutputStream( serialPort.getOutputStream() ) ) );
+//                    outputStream = serialPort.getOutputStream();
+//                    inputStream = serialPort.getInputStream();
                     Utils.sendCommand(outputStream, Utils.closeAllSessionReq);
                     try {
                         Thread.sleep(Utils.COM_DISCOVERY_TIMEOUT);
@@ -215,20 +224,24 @@ public class HubConnection implements Runnable{
                         //ignore
                     }
 
-                    Utils.cleanInputStream(inputStream);
+                    Utils.cleanInputStream(serialPort.getInputStream()); 
 
                     Utils.sendCommand(outputStream, Utils.hubIdentifictionReq);
-                    if (inputStream.read() != (Utils.hubIdentifictionAck & 0x00FF)) {
+                    if (inputStream.read() 
+                            != (Utils.hubIdentifictionAck & 0x00FF)) {
                         continue;
                     }
                     if (inputStream.read() != ((Utils.hubIdentifictionAck >>> 8) & 0x00FF)) {
                         continue;
                     }
                     Utils.readBytes(inputStream, buf, 4);
+                    hubId = Utils.bytes2long(buf, (byte) 4);                    
 
-                    hubId = Utils.bytes2long(buf, (byte) 4);
+                    Utils.readBytes(inputStream, buf, 2);
+                    int hubFirmVer= (int)Utils.bytes2long(buf, (byte) 2);
+                    
                     hubs.put(Hub.convertHubId2Hex(hubId), new Hub(hubId, comPort));
-                    lgr.info("Time:"+System.nanoTime()+","+"hub found:" + portId.getName());
+                    lgr.info("Time:"+System.nanoTime()+","+"hub found:" + portId.getName()+"hub firm ver"+hubFirmVer);
                 } catch (MeteringSessionException ex) {
 
                     // lgr.warn(null, ex);
@@ -321,7 +334,11 @@ public class HubConnection implements Runnable{
         hubFlashSession = new HubFlashSession(this, time);
         return hubFlashSession;
     }
-    
+
+     public HubFlashSession createHubFlashSession(long time) throws MeteringSessionException {
+        hubFlashSession = new HubFlashSession(this, time);
+        return hubFlashSession;
+    }
     /**
      * Zamyka sesję odczytu pamięci flash koncentratora.
      * @throws MeteringSessionException zgłaszany w przypadku niepowodzenia
@@ -337,6 +354,15 @@ public class HubConnection implements Runnable{
         }
     }
 
+    /**
+     * Zamyka wszystkie sesję koncentratora.
+     * @throws MeteringSessionException 
+     */
+    public void closeAllSessions() throws MeteringSessionException {
+            sendCommand(Utils.closeAllSessionReq);
+            receiveAck(Utils.closeAllSessionRes);
+               
+    }    
     /**
      * Tworzy sesję radiową, ustalając maksymalny czas bezczynności na <code>timeout</code>
      * sekund, po którym koncentrator zamyka sesję.
@@ -401,6 +427,20 @@ public class HubConnection implements Runnable{
         }
     }
 
+    public int getHubFirmawareVersion() throws MeteringSessionException{
+        sendCommand(Utils.hubFirmwareVerReq);
+        byte[] data = receiveAck(Utils.hubFirmwareVerRes);
+        int ver= (int)Utils.bytes2long(data, 2);
+        return ver;
+    }
+    
+    public int getHubHardwareVersion() throws MeteringSessionException{
+        sendCommand(Utils.hubHardwareVerReq);
+        byte[] data = receiveAck(Utils.hubHardwareVerRes);
+        int ver= (int)Utils.bytes2long(data, 2);
+        return ver;
+    }
+    
     /**
      * Pobiera informacje o trybie rejestracji danych w pamięci flash koncentratora.
      * @return tryb rejestracji danych w pamięci flash koncentratora, bit b0 - tryb nadpisywania,
@@ -581,7 +621,8 @@ public class HubConnection implements Runnable{
                 
         }
         lgr.debug("Time:"+System.nanoTime()+","+"start sendCommand 0x"+String.format("%4x", command)+ 
-        " thread: "+Thread.currentThread().getName());          
+        " thread: "+Thread.currentThread().getName()+Utils.bytes2HexStr(data)); 
+        
         canSendCommand = false;
         if (Thread.currentThread().isInterrupted()) 
            return;
@@ -756,7 +797,7 @@ public class HubConnection implements Runnable{
      catch (MeteringSessionException ex){
                lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+ex);         
                heartBeatThread=null;
-               HubSessionManager.closeHubSession(hub);
+               HubSessionDBManager.getHubSessionManager().closeHubSession(hub);
      }
      finally{
         lgr.debug("Time:"+System.nanoTime()+","+"Thread:"+Thread.currentThread().getName()+" stopped.");            

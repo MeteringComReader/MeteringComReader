@@ -6,20 +6,24 @@ package meteringcomreader;
 
 import meteringcomreader.exceptions.MeteringSessionTimeoutException;
 import meteringcomreader.exceptions.MeteringSessionException;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Map;
 import meteringcomreader.exceptions.MeteringSessionOperationAlreadyInProgressException;
 import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Juliusz
+ * @author Juliusz Jezierski
  */
-public class TestFlashSession {
+public class TestHubFlashSession {
+                private static final Logger lgr = LoggerFactory.getLogger(TestHubFlashSession.class);
         public static void main(String args[]) throws MeteringSessionException, InterruptedException, Exception{
-            PropertyConfigurator.configure(TestFlashSession.class.getResource("log4j.properties"));
+            PropertyConfigurator.configure(TestHubFlashSession.class.getResource("log4j.properties"));
+
      
             /* TODO start latka do pominiecia ostatniej strony pamieci loggera*/
             /* zmienić w projekcie główna klasę! */
@@ -45,6 +49,16 @@ public class TestFlashSession {
                 throw new MeteringSessionException("nie znaleziono żadnego huba");
             }
              hc=HubConnection.createHubConnection(hub);
+             
+/*             
+             try{
+                hc.closeAllSessions();
+             }
+             catch(Exception e)
+             {
+                 System.err.println(e.getMessage());                      
+             }
+*/
             /*
             HubFlashSession hubSession = hc.createHubFlashSession(new Timestamp(0));
             DataPacket packet;
@@ -53,14 +67,38 @@ public class TestFlashSession {
             }
             hubSession.close();
              */
-
+           
+            int hubHVer=hc.getHubHardwareVersion();
+            int hubFVer=hc.getHubFirmawareVersion();
+            System.out.println("hubHVer"+Integer.toHexString(hubHVer));
+            System.out.println("hubFVer"+Integer.toHexString(hubFVer));
+/*  
+            Date now =new Date();
             
-            LoggerFlashSession loggerFlashSession = hc.createLoggerFlashSession(new Timestamp(0));
-            DataPacket packet=null;
-            
-            while ((packet = loggerFlashSession.getNextPacket(100000))!=null){
-            System.out.println(packet);
+            long[] loggers = hc.getRegistredLoggers();
+            for(int i=0; i< loggers.length; i++){
+                System.out.println(Long.toHexString(loggers[i]));
             }
+//            hc.setHubTime(new Timestamp((new Date()).getTime()));
+            Timestamp time = hc.getHubTime();
+            System.out.println(time.toString());
+*/
+//            hc.createRadioSession(89);
+
+           
+            HubFlashSession loggerFlashSession = hc.createHubFlashSession(0xFFFFFFFF);
+//            LoggerFlashSession loggerFlashSession = hc.createLoggerFlashSession(new Timestamp(0));
+            DataPacket packet=null;
+            int packetCount =0;
+            while ((packet = loggerFlashSession.getPrevPacket())!=null){
+//                lgr.info("next data");
+            System.out.println(packet);
+            packetCount++;
+            if (packetCount==10000)
+                break;
+            }
+System.out.println("koniec");
+
             
 /*            
             LoggerFlashSessionDBInserter loggerFlashSessionDBInserter = LoggerFlashSessionDBInserter.createLoggerFlashSessionDBInserter(hc, null);
@@ -71,6 +109,7 @@ public class TestFlashSession {
             
             }
             finally{
+//                Thread.sleep(10000);
                 if (hc!=null)
                     hc.close();
             }

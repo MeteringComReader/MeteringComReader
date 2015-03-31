@@ -12,6 +12,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -28,10 +29,11 @@ import meteringcomreader.DBUtils;
 import meteringcomreader.Hub;
 import meteringcomreader.HubRequest;
 import meteringcomreader.HubResponse;
-import meteringcomreader.HubSessionManager;
+import meteringcomreader.HubSessionDBManager;
 import meteringcomreader.exceptions.MeteringSessionCRCException;
 import meteringcomreader.exceptions.MeteringSessionException;
 import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.OracleStatement;
 import oracle.jdbc.dcn.DatabaseChangeEvent;
 import oracle.jdbc.dcn.DatabaseChangeListener;
@@ -53,7 +55,7 @@ public class DBChangeNotification implements DatabaseChangeListener
     private static final String dbcQuerySQL="select HR_HS_NUMBER from hub_requests where HR_HS_NUMBER=?";
     private static final String getHubReqestsSQL
             ="select HR_P1,HR_P2,HR_P3,HR_P4,HR_P5,HR_P6,HR_P7,HR_P8,HR_P9,HR_P10, HR_HS_NUMBER,HR_COMMAND from hub_requests where rowid=?";
-    private static  PreparedStatement getHubReqestsPS=null;
+    private static  OraclePreparedStatement getHubReqestsPS=null;
     private static final String putHubReqestsSQL
             ="insert into hub_responses (HP_P1,HP_P2,HP_P3,HP_P4,HP_P5,HP_HR_HS_NUMBER,HP_ERR_MSG) values (?,?,?,?,?,?,?)";
     private static  PreparedStatement putHubReqestsPS=null;
@@ -141,12 +143,12 @@ public class DBChangeNotification implements DatabaseChangeListener
     public void onDatabaseChangeNotification(DatabaseChangeEvent dce) {
         lgr.debug("kolejne wywołanie powiadomienia");
         lgr.debug(dce.toString());        
-        if (! HubSessionManager.isRegisteredForDCN(dce.getRegId()))
+        if (! HubSessionDBManager.getHubSessionManager().isRegisteredForDCN(dce.getRegId()))
             return;
         Connection conn = null;
         try {
             conn = DBUtils.createDBConnection();
-            getHubReqestsPS = conn.prepareStatement(getHubReqestsSQL);
+            getHubReqestsPS = (OraclePreparedStatement) conn.prepareStatement(getHubReqestsSQL);
             putHubReqestsPS = conn.prepareStatement(putHubReqestsSQL);
             QueryChangeDescription[] queryChangeDescription = dce.getQueryChangeDescription();
             if (queryChangeDescription==null){
@@ -277,8 +279,8 @@ public class DBChangeNotification implements DatabaseChangeListener
             throw new MeteringSessionException("Can't parse bool value:"+bool);
     }
 
-    private HubRequest getHubRequestFromDB(PreparedStatement getHubReqestsPS, ROWID rowid) throws SQLException {
-        getHubReqestsPS.setRowId(1, rowid);
+    private HubRequest getHubRequestFromDB(OraclePreparedStatement getHubReqestsPS, ROWID rowid) throws SQLException {
+        getHubReqestsPS.setROWID(1, rowid);
         HubRequest hr =new HubRequest();
         ResultSet rs = getHubReqestsPS.executeQuery();
         if (rs.next()){
@@ -314,7 +316,7 @@ public class DBChangeNotification implements DatabaseChangeListener
         
         if (testHub){
             DBChangeNotification.registerForCallback(hub, conn);
-            HubSessionManager.registerTestHub(hub);
+            HubSessionDBManager.getHubSessionManager().registerTestHub(hub);
         }
         try {Thread.sleep(1000*2);} catch (InterruptedException ex) {/*ignore it*/}
         try{
@@ -337,14 +339,14 @@ public class DBChangeNotification implements DatabaseChangeListener
         finally{                    
             if (testHub){
                 unregisterForCallback(hub, conn);
-                HubSessionManager.unregisterTestHub(hub);
+                HubSessionDBManager.getHubSessionManager().unregisterTestHub(hub);
             }
         }
         return ret;
     }
         
     public static void  main(String[]arg) throws MeteringSessionException, InterruptedException{
-        PropertyConfigurator.configure(HubSessionManager.class.getResource("/meteringcomreader/log4j.properties"));
+        PropertyConfigurator.configure(HubSessionDBManager.class.getResource("/meteringcomreader/log4j.properties"));
 
         Connection conn = DBUtils.createDBConnection();
         Hub hub = new Hub("1", "ComX");

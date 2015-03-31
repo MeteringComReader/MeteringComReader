@@ -26,8 +26,8 @@ public class HubSessionService {
     public static void downloadMeasurmentsFromHub(String hubNo, Date from) throws MeteringSessionException {
         try{
         Timestamp time = new Timestamp(from.getTime());
-        HubSessionManager.downloadMeasurmentsFromHub(hubNo, time);
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubSessionDBManager.getHubSessionManager().downloadMeasurmentsFromHub(hubNo, time);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         HubFlashSessionDBInserter inserter= HubFlashSessionDBInserter.createHubFlashSessionDBInserter(hc, time);
         inserter.mainThread();
         }catch (Throwable ex){
@@ -43,7 +43,7 @@ public class HubSessionService {
             time = new Timestamp(from.getTime());
         else
             time=null;
-        int newMeasuments = HubSessionManager.downloadMeasurmentsFromLogger(hubNo, time);
+        int newMeasuments = HubSessionDBManager.getHubSessionManager().downloadMeasurmentsFromLogger(hubNo, time);
 /*        
         HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
         LoggerFlashSessionDBInserter inserter= LoggerFlashSessionDBInserter.createLoggerFlashSessionDBInserter(hc, time);
@@ -61,7 +61,7 @@ public class HubSessionService {
             Date startTime, Date endTime, 
             boolean enable) throws MeteringSessionException {
         try{
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         if (enable){
            Timestamp startTimestamp = new Timestamp(startTime.getTime());
            Timestamp endTimestamp = new Timestamp(endTime.getTime());
@@ -77,7 +77,7 @@ public class HubSessionService {
 
     public static void overwriteHubFlashMemoryMode(String hubNo, boolean enable) throws MeteringSessionException  {
         try{
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         if (enable)
             hc.enableOverrideHubFlashMemMode();
         else
@@ -90,7 +90,7 @@ public class HubSessionService {
 
     public static void registerMeasurer(String hubNo, String measurerNo)  throws MeteringSessionException {
         try{
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         hc.registerLogger(Utils.hexId2long(measurerNo));
         }catch (Throwable ex){
             throw new MeteringSessionException(ex.getMessage());
@@ -100,7 +100,7 @@ public class HubSessionService {
 
     public static void unregisterMeasurer(String hubNo, String measurerNo)  throws MeteringSessionException {
         try{
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         hc.unregisterLogger(Utils.hexId2long(measurerNo));
         }catch (Throwable ex){
             throw new MeteringSessionException(ex.getMessage());
@@ -110,7 +110,7 @@ public class HubSessionService {
 
     public static void measurerRadio(String hubNo, String measurerNo,  boolean enable)  throws MeteringSessionException {
         try{
-        HubConnection hc = HubSessionManager.getHubsSessions().getHubConnection(hubNo);
+        HubConnection hc = HubSessionDBManager.getHubSessionManager().getHubsSessions().getHubConnection(hubNo);
         if (enable){
             hc.enableLoggerRadio(Utils.hexId2long(measurerNo));
         }           

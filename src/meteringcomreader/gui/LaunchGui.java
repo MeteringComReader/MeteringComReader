@@ -15,7 +15,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.*;
-import meteringcomreader.HubSessionManager;
+import meteringcomreader.HubSessionDBManager;
 import meteringcomreader.exceptions.MeteringSessionException;
 import meteringcomreader.StdOutErrLog;
 import org.apache.log4j.PropertyConfigurator;
@@ -125,7 +125,7 @@ public class LaunchGui {
 //                SwingAppenderUI.getInstance().getJframe().setVisible(false);
                 tray.remove(trayIcon);
                 try {
-                    HubSessionManager.stopHubSessionManager();
+                    HubSessionDBManager.getHubSessionManager().stopHubSessionManager();
                 } catch (MeteringSessionException ex) {
                     //lgr.warn(null, ex);
                 }
@@ -137,7 +137,7 @@ public class LaunchGui {
       
 //        JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
         try {
-            HubSessionManager.startHubSessionManager();
+            HubSessionDBManager.getHubSessionManager().startHubSessionManager();
         } catch (MeteringSessionException ex) {
             lgr.warn(null, ex);
         }

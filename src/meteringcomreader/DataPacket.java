@@ -4,6 +4,13 @@
  */
 package meteringcomreader;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import meteringcomreader.exceptions.MeteringSessionException;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -13,7 +20,7 @@ import meteringdatareader.Frame;
  *
  * @author Juliusz
  */
-public class DataPacket {
+public class DataPacket implements Serializable{
 //    static int LEN=31;
 //    static int START_DATA=13;
      static final int DEF_TEMP_COUNT=6;
@@ -83,7 +90,7 @@ public class DataPacket {
               ((long)frame.getHeaderElement(Frame.headerFrameLogger, "IDD"))&0x00000000FFFFFFFFL;
         
         int infbPosion=frame.getPositionOfElement(Frame.headerFrameLogger, "INFB");
-        Frame infbFrame = new Frame(data, infbPosion/8, 4); //zakladam, że inb rozpoczyna się od pełnego bajtu
+        Frame infbFrame = new Frame(data, start + infbPosion/8, 4); //zakladam, że inb rozpoczyna się od pełnego bajtu
         
         encAlg = (short)infbFrame.getHeaderElement(Frame.frameINFB, "ENCF");
 //        encAlg=0;
@@ -102,7 +109,7 @@ public class DataPacket {
         int startData=startAIB +    (short)infbFrame.getHeaderElement(Frame.frameINFB, "AIBF"); //nie uwzględnia łańcucha pól AIB
       
         if (isSPRDF==1){
-            measurmentPeriod= (int) Utils.bytes2long(data, startSPRDF, 2);
+            measurmentPeriod= (int) Utils.bytes2long(data, start + startSPRDF, 2);
         }
         else{
             tempCount=1;            
@@ -110,8 +117,8 @@ public class DataPacket {
         }
 //        rssi=((int)((byte)frame.getHeaderElement(Frame.frameTempLogger, "RSSI")))/2-74;
 //        lqi=frame.getHeaderElement(Frame.frameTempLogger, "LQI")&0x7F; //ignore b7
-        rssi = ((int)Utils.bytes2long(data, frameSize-2, 1))/2-74;
-        lqi= ((int)Utils.bytes2long(data, frameSize-1, 1))&0x7F; //ignore b7
+        rssi = ((int)Utils.bytes2long(data, start + frameSize-2, 1))/2-74;
+        lqi= ((int)Utils.bytes2long(data, start + frameSize-1, 1))&0x7F; //ignore b7
         
         if (encAlg!=0){
 //                encriptedData= Arrays.copyOfRange(data, START_DATA, START_DATA+16);
@@ -141,6 +148,10 @@ public class DataPacket {
         }
     }
     
+    public DataPacketDTO generateDTO(){
+        return new DataPacketDTO( appId,  fieldLength,  loggerNo,  encAlg,  measurmentTimeStart,  measurmentTimeEnd,  measurmentPeriod, 
+                temperatures, batteryVoltage, loggerId, rssi, lqi, tempCount, endTime, encriptedData, decriptKey, frameSize);
+    }
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder("appId:");sb.append(String.format("%0#8X", appId));
@@ -181,8 +192,8 @@ public class DataPacket {
     public void setLoggerNo(long loggerNo) {
         this.loggerNo = loggerNo;
     }    
-    public static void main(String[]args) throws MeteringSessionException{
-        int intData[]={0X4D,0X45,0X4D,0X45,0X1A,0X30,0XDC,  0X89,0X23,0X30,0X8,0X11,0X8,0XA,0X0,0XD5,0XD3,0X68,0X52,0XDA,0XA0,0XD,0XDA,0XA0,0XD,0XDA,0XA0,0XD,0X1D,0X3C,0XCA,0X1F,0XB3};
+    public static void main(String[]args) throws MeteringSessionException, FileNotFoundException, IOException, ClassNotFoundException{
+        int intData[]={0X4D,0X45,0X4D,0X45, 0X1A, 0X30,0XDC,0X89,0X23, 0X30,0X8,0X11,0X8, 0XA,0X0,0XD5,0XD3,0X68,0X52,0XDA,0XA0,0XD,0XDA,0XA0,0XD,0XDA,0XA0,0XD,0X1D,0X3C,0XCA,0X1F,0XB3};
 //        int intData[]=  {0X4D,0X45,0X4D,0X45,0X1A,0XA7,  0XDE,0X89,0X23,0X30,0X8,0X11,0X8,0XB4,0X0,0XC0,0X16,0X69,0X52,0XF4,0X50,0XF,0XF5,0X60,0XF,0XF6,0X70,0XF,0X1D,0X77,0X18,0X56,0XB3};
 //        int intData[]=  {0X4D,0X45,0X4D,0X45,0X1A,0XA7,  0XDE,0X89,0X23,0X30,0X8,0X11,0X8,0XB4,0X0,0XC0,0X16,0X69,0X52,0XF4,0X50,0XF,0XF5,0X60,0XF,0XF6,0X70,0XF,0X1D,0X77,0X18,0X56,0XB3};
 //        int intData[]= {0X4D,0X45,0X4D,0X45,0X1A,0XF,0XDA,    0X89,0X23,0X30,0X8,0X11,0X8,0XB4,0X0,0X2C,0X1F,0X69,0X52,0X8,0X51,0X10,0XA,0X1,0X11,0X10,0X51,0X11,0X1E,0XD1,0XDF,0X69,0XB2};
@@ -192,5 +203,24 @@ public class DataPacket {
             data[i]=(byte)(intData[i]);
        DataPacket dp = new DataPacket(data, data.length);
        System.out.println(dp);
+       
+/*       
+       FileOutputStream fout = new FileOutputStream("c:\\temp\\dp.ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fout);
+        oos.writeObject(dp);
+        fout.close();
+*/
+/*       
+        FileInputStream fin = new FileInputStream("c:\\temp\\dp.ser");
+        ObjectInputStream ois = new ObjectInputStream(fin);
+        DataPacket newdp;
+        
+        do{
+            newdp = (DataPacket) ois.readObject();
+            System.out.println(newdp);
+        }while (newdp!=null);
+
+       fin.close();
+  */      
     }
 }

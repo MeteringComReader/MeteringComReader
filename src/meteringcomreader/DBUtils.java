@@ -16,7 +16,7 @@ public class DBUtils {
         /**
      * Utworzenie loggera systemowego
      */
-    private static final Logger lgr = LoggerFactory.getLogger(ComReadDispatch.class);
+    private static final Logger lgr = LoggerFactory.getLogger(DBUtils.class);
     
     protected static ResourceBundle rb = ResourceBundle.getBundle ("meteringcomreader.db");
     /**

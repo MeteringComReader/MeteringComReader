@@ -143,6 +143,7 @@ static{
     resSizes.put(Utils.getLoggerIdRes, 4);  //get IR session logger ID
     resSizes.put(Utils.enableLoggerRadioAck, 0);  //set enable logger radio ack
     resSizes.put(Utils.getNextHubFlashSessionRes, 0); //set by HubFlasSession 
+    resSizes.put(Utils.getPrevHubFlashSessionRes, 0); //set by HubFlasSession 
     
     resSizes.put(Utils.getNextLoggerFlashSessionRes, 0); //set by LoggerFlasSession class
     resSizes.put(Utils.regetPrevLoggerFlashSessionRes, 0); //set by LoggerFlasSession class
@@ -157,6 +158,8 @@ static{
     resSizes.put(Utils.readLastRecodTimeFlashSessionRes, 4);
     resSizes.put(Utils.countRecordsPerPageLoggerFlashSessionRes,1);
 
+    resSizes.put(Utils.hubFirmwareVerRes, 2);
+    resSizes.put(Utils.hubHardwareVerRes, 2);
 }
 
     /**

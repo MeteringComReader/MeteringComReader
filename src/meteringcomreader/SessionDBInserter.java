@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Juliusz
  */
-abstract public class SessionDBInserter {
+abstract public class SessionDBInserter implements SessionInserter{
     /**
      * Utworzenie loggera systemowego
      */
@@ -27,7 +27,7 @@ abstract public class SessionDBInserter {
     protected static String insertMeasurmentSQL = "insert into measurment (MT_ID, MT_MS_ID, MT_PA_ID, MT_TIME, MT_MECH_VALUE1, MT_BATTERY_VOLTAGE) values (mt_mt_id_seq.nextval,?,?,?,?,?)";
     protected static String getCurrMtIdSQL = "select mt_mt_id_seq.currval from dual";
     protected static String updateNewestMeasurmentSQL = "update measurer set MS_LAST_MT_ID=?, MS_BEFORE_LAST_MT_ID=MS_LAST_MT_ID where MS_ID=?";
-    private String getLoggerIdSQL="select MS_ID from measurer where MS_NUMBER=? for update";
+    protected static String getLoggerIdSQL="select MS_ID from measurer where MS_NUMBER=? for update";
     protected static String insertConnectedLoggersSQL="insert into measurer_session (MSS_NUMBER,MSS_RSSI,MSS_HS_NUMBER,MSS_LAST_SEEN, mss_measurment_period) values (?,?,?,?,?)";
     protected static String updateConnectedLoggersSQL="update measurer_session set MSS_RSSI=?,  MSS_LAST_SEEN=?, mss_measurment_period=? where MSS_NUMBER=? and MSS_HS_NUMBER=?";    
     
@@ -182,7 +182,6 @@ abstract public class SessionDBInserter {
         }
     }
 
-    abstract public int  mainThread() throws MeteringSessionException;
 
 /*    
     public static void main(String[] args) throws MeteringSessionException {
